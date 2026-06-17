@@ -14,7 +14,8 @@
   "scripts": {
     "build": "tsc -b",
     "clean": "tsc -b --clean",
-    "probe:axe": "tsx src/probe-axe.ts"
+    "probe:axe": "tsx src/probe-axe.ts",
+    "probe:tree": "tsx src/probe-tree.ts"
   },
   "dependencies": {
     "@axe-core/playwright": "^4.11.3",
