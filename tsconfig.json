@@ -1,0 +1,11 @@
+{
+  "files": [],
+  "references": [
+    { "path": "packages/shared" },
+    { "path": "packages/harness" },
+    { "path": "packages/scoring" },
+    { "path": "packages/bench" },
+    { "path": "packages/control-plane" },
+    { "path": "apps/dashboard" }
+  ]
+}
