@@ -13,9 +13,11 @@
   },
   "scripts": {
     "build": "tsc -b",
-    "clean": "tsc -b --clean"
+    "clean": "tsc -b --clean",
+    "test:pr": "tsc -b && node --env-file-if-exists=../../.env dist/scripts/test-pr.js"
   },
   "dependencies": {
+    "@octokit/rest": "^21.1.1",
     "@ramp/shared": "workspace:*",
     "@ramp/harness": "workspace:*",
     "@ramp/scoring": "workspace:*"
