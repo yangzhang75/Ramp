@@ -40,3 +40,7 @@ export async function runPipeline(
 /** Re-export the fix-loop signature the control-plane will implement. */
 export { runFixLoop };
 export type { RunFixLoopOptions, FixResult };
+
+/** GitHub PR pipeline. */
+export { openPr, preflight, parseTargetRepo } from "./github.js";
+export type { OpenPrOptions, PreflightResult } from "./github.js";
