@@ -1,0 +1,10 @@
+packages:
+  - "packages/*"
+  - "apps/*"
+
+# Native / build-script dependencies allowed to run install scripts.
+# better-sqlite3 compiles a native addon; esbuild ships a platform binary
+# (pulled in transitively by drizzle-kit).
+allowBuilds:
+  better-sqlite3: true
+  esbuild: true
