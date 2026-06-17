@@ -16,7 +16,8 @@
     "clean": "tsc -b --clean",
     "probe:axe": "tsx src/probe-axe.ts",
     "probe:tree": "tsx src/probe-tree.ts",
-    "probe:sr": "tsx src/probe-sr.ts"
+    "probe:sr": "tsx src/probe-sr.ts",
+    "probe:inspect": "tsx src/probe-inspect.ts"
   },
   "dependencies": {
     "@axe-core/playwright": "^4.11.3",
