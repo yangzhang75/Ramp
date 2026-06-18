@@ -2,7 +2,10 @@
   "extends": "../../tsconfig.base.json",
   "compilerOptions": {
     "rootDir": "src",
-    "outDir": "dist"
+    "outDir": "dist",
+    // The harness drives a real browser; page.evaluate callbacks use DOM
+    // globals (document, getComputedStyle, HTMLCollection, ...).
+    "lib": ["ES2022", "DOM", "DOM.Iterable"]
   },
   "include": ["src"],
   "references": [{ "path": "../shared" }]
