@@ -14,12 +14,17 @@
   "scripts": {
     "build": "tsc -b",
     "clean": "tsc -b --clean",
+    "serve": "tsx src/server-main.ts",
     "test:pr": "tsc -b && node --env-file-if-exists=../../.env dist/scripts/test-pr.js"
   },
   "dependencies": {
     "@octokit/rest": "^21.1.1",
     "@ramp/shared": "workspace:*",
     "@ramp/harness": "workspace:*",
-    "@ramp/scoring": "workspace:*"
+    "@ramp/scoring": "workspace:*",
+    "drizzle-orm": "^0.38.2"
+  },
+  "devDependencies": {
+    "tsx": "^4.22.4"
   }
 }
