@@ -17,12 +17,16 @@
     "probe:axe": "tsx src/probe-axe.ts",
     "probe:tree": "tsx src/probe-tree.ts",
     "probe:sr": "tsx src/probe-sr.ts",
-    "probe:inspect": "tsx src/probe-inspect.ts"
+    "probe:inspect": "tsx src/probe-inspect.ts",
+    "probe:audit": "tsx src/probe-audit.ts"
   },
   "dependencies": {
+    "@ai-sdk/anthropic": "^3.0.85",
     "@axe-core/playwright": "^4.11.3",
     "@ramp/shared": "workspace:*",
-    "playwright": "^1.61.0"
+    "ai": "^6.0.207",
+    "playwright": "^1.61.0",
+    "zod": "^4.4.3"
   },
   "devDependencies": {
     "tsx": "^4.22.4"
