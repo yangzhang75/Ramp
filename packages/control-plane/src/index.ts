@@ -51,6 +51,7 @@ export {
   ensureSchema,
   insertRun,
   insertFindings,
+  insertScore,
   setRunStatus,
   getRunWithFindings,
 } from "./db.js";
