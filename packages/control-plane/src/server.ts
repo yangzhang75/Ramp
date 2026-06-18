@@ -17,12 +17,14 @@ import {
   type ServerResponse,
 } from "node:http";
 import { runAudit } from "@ramp/harness";
+import { computeScore } from "@ramp/scoring";
 import { getDb } from "@ramp/shared";
 import {
   ensureSchema,
   getRunWithFindings,
   insertFindings,
   insertRun,
+  insertScore,
   setRunStatus,
 } from "./db.js";
 
@@ -69,11 +71,17 @@ async function handleAudit(
   try {
     const findings = await runAudit({ url, repo, hints, runId });
     insertFindings(db, findings);
+
+    // "before" compliance score from the findings just produced.
+    const breakdown = computeScore(findings);
+    insertScore(db, { runId, phase: "before", ...breakdown });
+
     setRunStatus(db, runId, "completed");
     sendJson(res, 200, {
       runId,
       status: "completed",
       findingsCount: findings.length,
+      score: { phase: "before", ...breakdown },
       findings,
     });
   } catch (e) {
