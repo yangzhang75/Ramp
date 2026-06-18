@@ -44,3 +44,13 @@ export type { RunFixLoopOptions, FixResult };
 /** GitHub PR pipeline. */
 export { openPr, preflight, parseTargetRepo } from "./github.js";
 export type { OpenPrOptions, PreflightResult } from "./github.js";
+
+/** HTTP server + DB wiring. */
+export { createServer, startServer } from "./server.js";
+export {
+  ensureSchema,
+  insertRun,
+  insertFindings,
+  setRunStatus,
+  getRunWithFindings,
+} from "./db.js";
