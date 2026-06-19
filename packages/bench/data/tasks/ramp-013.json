@@ -1,0 +1,21 @@
+{
+  "id": "ramp-013",
+  "repoUrl": "https://github.com/cyrildaoust-source/mikadodecov2",
+  "framework": "javascript",
+  "expectedFindings": [
+    {
+      "type": "low_color_contrast",
+      "wcagRule": "1.4.3",
+      "file": "v3/styles.css",
+      "expectedFix": "Ensure color contrast meets minimum requirements."
+    }
+  ],
+  "createdAt": "2026-06-19T09:18:03.988Z",
+  "baseCommit": "c6a1848ecb2b8964d8f8db5987be4728497cc45a",
+  "fixCommit": "f6176550ed153536b7dd6c886e7de0d7d20077af",
+  "sourcePr": {
+    "repo": "cyrildaoust-source/mikadodecov2",
+    "pr_number": 31,
+    "title": "a11y Lot E — cibles tactiles ≥24px (WCAG 2.5.8 AA)"
+  }
+}
