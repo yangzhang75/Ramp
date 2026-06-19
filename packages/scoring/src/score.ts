@@ -12,10 +12,9 @@ import {
   readFileSync,
   readdirSync,
   rmSync,
-  writeFileSync,
 } from "node:fs";
 import { tmpdir } from "node:os";
-import { dirname, join, resolve } from "node:path";
+import { dirname, join } from "node:path";
 import { promisify } from "node:util";
 import { fileURLToPath } from "node:url";
 import { anthropic } from "@ai-sdk/anthropic";
@@ -23,11 +22,19 @@ import { openai } from "@ai-sdk/openai";
 import { generateObject, type LanguageModel } from "ai";
 import { z } from "zod";
 import { runAudit } from "@ramp/harness";
-import type { AnnotatedFinding, BenchTask, Finding } from "@ramp/shared";
+import type { BenchTask, Finding } from "@ramp/shared";
 import { getDb } from "@ramp/shared";
 import { findings, runs, scores } from "@ramp/shared/db";
 
-const execFileAsync = promisify(execFile);
+import { modelSlug, providerModelKey } from "./leaderboard-models.js";
+import { upsertLeaderboardEntry } from "./leaderboard-store.js";
+import {
+  buildAuditContext,
+  collectSourceBundles,
+  readSourceWindow,
+  type AuditContext,
+} from "./audit-context.js";
+import { gradeDetection } from "./match.js";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const TASKS_DIR = join(__dirname, "../../bench/data/tasks");
@@ -50,6 +57,17 @@ export interface BenchTaskRecord extends BenchTask {
   sourcePr: { repo: string; pr_number: number; title: string };
 }
 
+const execFileAsync = promisify(execFile);
+
+export interface ScoreBenchmarkOptions {
+  provider?: string;
+  model?: string;
+  modelLabel?: string;
+  /** Run id prefix. Default "bench"; leaderboard uses "lb". */
+  runPrefix?: string;
+  writeLeaderboard?: boolean;
+}
+
 export interface DetectionMetrics {
   mode: "naked" | "harness";
   tasks: number;
@@ -58,17 +76,6 @@ export interface DetectionMetrics {
   detected: number;
   recall: number;
   precision: number;
-}
-
-interface SourceBundle {
-  path: string;
-  content: string;
-}
-
-interface AuditContext {
-  targetUrl: string;
-  hints: string;
-  cleanupPaths: string[];
 }
 
 function ensureSchema(db: ReturnType<typeof getDb>): void {
@@ -158,152 +165,6 @@ async function cloneTaskRepo(task: BenchTaskRecord): Promise<string> {
   await runGit(repoPath, ["fetch", "--depth", "1", "origin", task.baseCommit]);
   await runGit(repoPath, ["checkout", "FETCH_HEAD"]);
   return repoPath;
-}
-
-function readSourceWindow(
-  repoPath: string,
-  file: string,
-  line?: number,
-): string {
-  const fullPath = join(repoPath, file);
-  if (!existsSync(fullPath)) {
-    return `(missing file: ${file})`;
-  }
-  const content = readFileSync(fullPath, "utf8");
-  if (!line) return content;
-  const lines = content.split("\n");
-  const start = Math.max(0, line - 25);
-  const end = Math.min(lines.length, line + 25);
-  return lines.slice(start, end).join("\n");
-}
-
-function collectSourceBundles(task: BenchTaskRecord, repoPath: string): SourceBundle[] {
-  const seen = new Set<string>();
-  const bundles: SourceBundle[] = [];
-
-  for (const finding of task.expectedFindings) {
-    if (seen.has(finding.file)) continue;
-    seen.add(finding.file);
-    bundles.push({
-      path: finding.file,
-      content: readSourceWindow(repoPath, finding.file, finding.line),
-    });
-  }
-  return bundles;
-}
-
-function writeTempHtml(taskId: string, body: string, css?: string): string {
-  const path = join(tmpdir(), `ramp-score-page-${taskId}-${randomUUID()}.html`);
-  const html = `<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  ${css ? `<style>${css}</style>` : ""}
-</head>
-<body>
-${body}
-</body>
-</html>`;
-  writeFileSync(path, html, "utf8");
-  return path;
-}
-
-function buildAuditContext(
-  task: BenchTaskRecord,
-  repoPath: string,
-): AuditContext {
-  const bundles = collectSourceBundles(task, repoPath);
-  const cleanupPaths: string[] = [];
-  const htmlFile = bundles.find((bundle) => bundle.path.endsWith(".html"));
-
-  let targetUrl: string;
-  if (htmlFile) {
-    targetUrl = resolve(repoPath, htmlFile.path);
-  } else {
-    const cssBundle = bundles.find((bundle) => bundle.path.endsWith(".css"));
-    const markupBundles = bundles.filter(
-      (bundle) => !bundle.path.endsWith(".css"),
-    );
-    const body = markupBundles
-      .map(
-        (bundle) =>
-          `<section data-source-file="${bundle.path}"><pre>${escapeHtml(bundle.content)}</pre></section>`,
-      )
-      .join("\n");
-    const tempHtml = writeTempHtml(
-      task.id,
-      body || "<p>Benchmark audit page</p>",
-      cssBundle?.content,
-    );
-    cleanupPaths.push(tempHtml);
-    targetUrl = tempHtml;
-  }
-
-  const hints =
-    `Benchmark task ${task.id}. When calling submit_finding, set sourceFile to the exact repo-relative path below.\n` +
-    bundles
-      .map((bundle) => `FILE: ${bundle.path}\n${bundle.content}`)
-      .join("\n\n");
-
-  return { targetUrl, hints, cleanupPaths };
-}
-
-function escapeHtml(value: string): string {
-  return value
-    .replaceAll("&", "&amp;")
-    .replaceAll("<", "&lt;")
-    .replaceAll(">", "&gt;");
-}
-
-function normalizeWcagRule(rule: string): string {
-  return rule.trim().split(/\s+/)[0]?.replace(/[^\d.]/g, "") ?? rule.trim();
-}
-
-function normalizePath(path: string): string {
-  return path.replace(/^\.\//, "").replace(/\\/g, "/");
-}
-
-function pathsMatch(expectedFile: string, sourceFile?: string): boolean {
-  if (!sourceFile) return false;
-  const a = normalizePath(expectedFile);
-  const b = normalizePath(sourceFile);
-  return a === b || a.endsWith(`/${b}`) || b.endsWith(`/${a}`);
-}
-
-export function matchFinding(
-  expected: AnnotatedFinding,
-  finding: Finding,
-): boolean {
-  return (
-    finding.type === expected.type &&
-    normalizeWcagRule(finding.wcagRule) === normalizeWcagRule(expected.wcagRule) &&
-    pathsMatch(expected.file, finding.sourceFile)
-  );
-}
-
-export function gradeDetection(
-  expected: AnnotatedFinding[],
-  detected: Finding[],
-): { truePositives: number; recall: number; precision: number } {
-  let truePositives = 0;
-  const matchedDetected = new Set<string>();
-
-  for (const exp of expected) {
-    const hit = detected.find(
-      (finding) =>
-        !matchedDetected.has(finding.id) && matchFinding(exp, finding),
-    );
-    if (hit) {
-      truePositives++;
-      matchedDetected.add(hit.id);
-    }
-  }
-
-  const recall = expected.length === 0 ? 0 : truePositives / expected.length;
-  const precision =
-    detected.length === 0 ? 0 : truePositives / detected.length;
-
-  return { truePositives, recall, precision };
 }
 
 const nakedSchema = z.object({
@@ -421,13 +282,14 @@ function persistRun(
   runId: string,
   repoUrl: string,
   benchTaskId: string,
-  framework?: string,
+  meta?: { modelLabel?: string; providerModel?: string },
 ): void {
   db.insert(runs)
     .values({
       id: runId,
       repoUrl,
-      framework,
+      framework: meta?.modelLabel,
+      packageManager: meta?.providerModel,
       benchTaskId,
       status: "scoring",
     })
@@ -477,18 +339,38 @@ function persistAggregateScore(
     .run();
 }
 
-export async function scoreBenchmark(): Promise<{
+export async function scoreBenchmark(
+  options: ScoreBenchmarkOptions = {},
+): Promise<{
   naked: DetectionMetrics;
   harness: DetectionMetrics;
 }> {
   const db = getDb();
   ensureSchema(db);
 
+  const provider =
+    options.provider ??
+    process.env.RAMP_AUDIT_PROVIDER ??
+    (process.env.ANTHROPIC_API_KEY ? "anthropic" : "openai");
+  const model =
+    options.model ??
+    process.env.RAMP_AUDIT_MODEL ??
+    (provider === "openai" ? "gpt-4o-mini" : "claude-sonnet-4-6");
+  const modelLabel = options.modelLabel ?? model;
+  const slug = modelSlug(provider, model);
+  const prefix = options.runPrefix ?? "bench";
+  const providerModel = providerModelKey(provider, model);
+
+  process.env.RAMP_AUDIT_PROVIDER = provider;
+  process.env.RAMP_AUDIT_MODEL = model;
+
   const tasks = loadBenchTaskRecords();
   const limited =
     SCORE_LIMIT > 0 ? tasks.slice(0, SCORE_LIMIT) : tasks;
 
-  console.log(`[score] running ${limited.length}/${tasks.length} tasks`);
+  console.log(
+    `[score] running ${limited.length}/${tasks.length} tasks (${modelLabel})`,
+  );
 
   const nakedRows: Array<{
     expected: number;
@@ -502,11 +384,12 @@ export async function scoreBenchmark(): Promise<{
   }> = [];
 
   const batchId = Date.now();
+  const runMeta = { modelLabel, providerModel };
 
-  const nakedAggregateRunId = `bench-naked-${batchId}`;
-  const harnessAggregateRunId = `bench-harness-${batchId}`;
-  persistRun(db, nakedAggregateRunId, "benchmark://detection", "aggregate");
-  persistRun(db, harnessAggregateRunId, "benchmark://detection", "aggregate");
+  const nakedAggregateRunId = `${prefix}-${slug}-naked-${batchId}`;
+  const harnessAggregateRunId = `${prefix}-${slug}-harness-${batchId}`;
+  persistRun(db, nakedAggregateRunId, "benchmark://detection", "aggregate", runMeta);
+  persistRun(db, harnessAggregateRunId, "benchmark://detection", "aggregate", runMeta);
 
   for (const task of limited) {
     console.log(`[score] ${task.id} ${task.sourcePr.repo}#${task.sourcePr.pr_number}`);
@@ -515,17 +398,26 @@ export async function scoreBenchmark(): Promise<{
 
     try {
       repoPath = await cloneTaskRepo(task);
-      const context = buildAuditContext(task, repoPath);
+      const bundles = collectSourceBundles(
+        task.expectedFindings,
+        repoPath,
+        readSourceWindow,
+      );
+      const context = buildAuditContext(task, repoPath, bundles);
       cleanupPaths = context.cleanupPaths;
 
       const nakedRunId = `${task.id}-naked-${batchId}`;
       const harnessRunId = `${task.id}-harness-${batchId}`;
-      persistRun(db, nakedRunId, task.repoUrl, task.id, task.framework);
-      persistRun(db, harnessRunId, task.repoUrl, task.id, task.framework);
+      persistRun(db, nakedRunId, task.repoUrl, task.id, runMeta);
+      persistRun(db, harnessRunId, task.repoUrl, task.id, runMeta);
 
       const nakedFindings = await runNakedAudit(task, context, nakedRunId);
       persistFindings(db, nakedFindings);
-      const nakedGrade = gradeDetection(task.expectedFindings, nakedFindings);
+      const nakedGrade = gradeDetection(
+        task.expectedFindings,
+        nakedFindings,
+        context.targetUrl,
+      );
       nakedRows.push({
         expected: task.expectedFindings.length,
         truePositives: nakedGrade.truePositives,
@@ -537,7 +429,11 @@ export async function scoreBenchmark(): Promise<{
 
       const harnessFindings = await runHarnessAudit(task, context, harnessRunId);
       persistFindings(db, harnessFindings);
-      const harnessGrade = gradeDetection(task.expectedFindings, harnessFindings);
+      const harnessGrade = gradeDetection(
+        task.expectedFindings,
+        harnessFindings,
+        context.targetUrl,
+      );
       harnessRows.push({
         expected: task.expectedFindings.length,
         truePositives: harnessGrade.truePositives,
@@ -563,8 +459,22 @@ export async function scoreBenchmark(): Promise<{
   persistAggregateScore(db, nakedAggregateRunId, naked);
   persistAggregateScore(db, harnessAggregateRunId, harness);
 
+  if (options.writeLeaderboard) {
+    upsertLeaderboardEntry({
+      provider,
+      model,
+      label: modelLabel,
+      taskCount: limited.length,
+      computedAt: new Date().toISOString(),
+      naked,
+      harness,
+    });
+  }
+
   return { naked, harness };
 }
+
+export { gradeDetection, matchFinding } from "./match.js";
 
 const isMain =
   process.argv[1] !== undefined &&

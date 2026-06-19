@@ -14,7 +14,11 @@
   "scripts": {
     "build": "tsc -b",
     "clean": "tsc -b --clean",
-    "score": "tsx --env-file=../../.env src/score.ts"
+    "score": "tsx --env-file=../../.env src/score.ts",
+    "leaderboard": "tsx --env-file=../../.env src/leaderboard.ts",
+    "leaderboard:openai": "tsx --env-file=../../.env src/leaderboard.ts",
+    "test:match": "tsx --test src/match.test.ts src/audit-context.test.ts",
+    "regrade": "tsx src/regrade-batch.ts"
   },
   "dependencies": {
     "@ai-sdk/anthropic": "^3.0.85",
