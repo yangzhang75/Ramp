@@ -13,6 +13,7 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 const REPO_ROOT = join(__dirname, "../../..");
 const TASKS_DIR = join(REPO_ROOT, "packages/bench/data/tasks");
 const CANDIDATES_PATH = join(REPO_ROOT, "packages/bench/data/candidates.jsonl");
+const LEADERBOARD_PATH = join(REPO_ROOT, "packages/scoring/data/leaderboard.json");
 
 export interface BenchmarkModeMetrics {
   mode: "naked" | "harness";
@@ -33,10 +34,13 @@ export interface BenchmarkScoresResponse {
 
 export interface BenchmarkLeaderboardRow {
   model: string;
+  provider?: string;
+  modelId?: string;
   mode: "naked" | "harness";
   recall: number;
   precision: number;
   tasks: number;
+  computedAt?: string;
 }
 
 export interface BenchmarkPrCard {
@@ -68,33 +72,120 @@ function decodeBenchmarkScore(
   };
 }
 
-function latestScoreForPrefix(
+function latestAggregateBenchmarkScore(
   db: Db,
-  prefix: "bench-naked-" | "bench-harness-",
+  mode: "naked" | "harness",
 ): typeof scores.$inferSelect | undefined {
   return db
     .select()
     .from(scores)
-    .where(like(scores.runId, `${prefix}%`))
+    .where(like(scores.runId, `%-${mode}-%`))
     .orderBy(desc(scores.computedAt))
-    .get();
+    .all()
+    .find(
+      (row) =>
+        !row.runId.startsWith("ramp-") &&
+        (row.runId.startsWith("bench") || row.runId.startsWith("lb-")),
+    );
+}
+
+function batchIdFromRunId(runId: string): string | null {
+  const match = runId.match(/-(\d+)$/);
+  return match?.[1] ?? null;
+}
+
+function taskCountForBatch(db: Db, batchId: string): number {
+  return db
+    .select({ id: runs.id })
+    .from(runs)
+    .all()
+    .filter(
+      (row) =>
+        row.id.startsWith("ramp-") &&
+        row.id.includes("-naked-") &&
+        row.id.endsWith(`-${batchId}`),
+    ).length;
+}
+
+function readLeaderboardFile(): {
+  entries: Array<{
+    provider: string;
+    model: string;
+    label: string;
+    taskCount: number;
+    computedAt: string;
+    naked: { recall: number; precision: number; expected: number; truePositives: number; detected: number };
+    harness: { recall: number; precision: number; expected: number; truePositives: number; detected: number };
+  }>;
+} {
+  if (!existsSync(LEADERBOARD_PATH)) return { entries: [] };
+  return JSON.parse(readFileSync(LEADERBOARD_PATH, "utf8")) as {
+    entries: Array<{
+      provider: string;
+      model: string;
+      label: string;
+      taskCount: number;
+      computedAt: string;
+      naked: { recall: number; precision: number; expected: number; truePositives: number; detected: number };
+      harness: { recall: number; precision: number; expected: number; truePositives: number; detected: number };
+    }>;
+  };
+}
+
+function latestLeaderboardEntry() {
+  const file = readLeaderboardFile();
+  if (file.entries.length === 0) return null;
+  return [...file.entries].sort((a, b) => b.computedAt.localeCompare(a.computedAt))[0]!;
 }
 
 export function getBenchmarkScores(db: Db): BenchmarkScoresResponse {
-  const nakedRow = latestScoreForPrefix(db, "bench-naked-");
-  const harnessRow = latestScoreForPrefix(db, "bench-harness-");
+  const latest = latestLeaderboardEntry();
+  if (latest) {
+    return {
+      naked: {
+        mode: "naked",
+        recall: latest.naked.recall,
+        precision: latest.naked.precision,
+        expected: latest.naked.expected,
+        truePositives: latest.naked.truePositives,
+        detected: latest.naked.detected,
+        runId: `leaderboard:${latest.provider}:${latest.model}:naked`,
+        computedAt: latest.computedAt,
+      },
+      harness: {
+        mode: "harness",
+        recall: latest.harness.recall,
+        precision: latest.harness.precision,
+        expected: latest.harness.expected,
+        truePositives: latest.harness.truePositives,
+        detected: latest.harness.detected,
+        runId: `leaderboard:${latest.provider}:${latest.model}:harness`,
+        computedAt: latest.computedAt,
+      },
+      taskCount: latest.taskCount,
+    };
+  }
 
-  const taskCount = new Set(
-    db
-      .select({ benchTaskId: runs.benchTaskId })
-      .from(runs)
-      .all()
-      .map((row) => row.benchTaskId)
-      .filter((id): id is string => {
-        if (!id || id === "aggregate" || id.startsWith("bench-")) return false;
-        return true;
-      }),
-  ).size;
+  const nakedRow = latestAggregateBenchmarkScore(db, "naked");
+  const harnessRow = latestAggregateBenchmarkScore(db, "harness");
+
+  const batchId =
+    nakedRow && batchIdFromRunId(nakedRow.runId)
+      ? batchIdFromRunId(nakedRow.runId)!
+      : null;
+  const taskCount = batchId
+    ? taskCountForBatch(db, batchId)
+    : new Set(
+        db
+          .select({ benchTaskId: runs.benchTaskId })
+          .from(runs)
+          .all()
+          .map((row) => row.benchTaskId)
+          .filter((id): id is string => {
+            if (!id || id === "aggregate" || id.startsWith("bench-")) return false;
+            return true;
+          }),
+      ).size;
 
   return {
     naked: nakedRow ? decodeBenchmarkScore(nakedRow, "naked") : null,
@@ -103,16 +194,39 @@ export function getBenchmarkScores(db: Db): BenchmarkScoresResponse {
   };
 }
 
-export function getBenchmarkLeaderboard(
-  db: Db,
-  modelName = process.env.RAMP_AUDIT_MODEL ?? "gpt-4o-mini",
-): BenchmarkLeaderboardRow[] {
+export function getBenchmarkLeaderboard(db: Db): BenchmarkLeaderboardRow[] {
+  const file = readLeaderboardFile();
+  if (file.entries.length > 0) {
+    return file.entries.flatMap((entry) => [
+      {
+        model: entry.label,
+        provider: entry.provider,
+        modelId: entry.model,
+        mode: "naked",
+        recall: entry.naked.recall,
+        precision: entry.naked.precision,
+        tasks: entry.taskCount,
+        computedAt: entry.computedAt,
+      },
+      {
+        model: entry.label,
+        provider: entry.provider,
+        modelId: entry.model,
+        mode: "harness",
+        recall: entry.harness.recall,
+        precision: entry.harness.precision,
+        tasks: entry.taskCount,
+        computedAt: entry.computedAt,
+      },
+    ]);
+  }
+
   const { naked, harness, taskCount } = getBenchmarkScores(db);
   const rows: BenchmarkLeaderboardRow[] = [];
 
   if (naked) {
     rows.push({
-      model: modelName,
+      model: process.env.RAMP_AUDIT_MODEL ?? "gpt-4o-mini",
       mode: "naked",
       recall: naked.recall,
       precision: naked.precision,
@@ -121,7 +235,7 @@ export function getBenchmarkLeaderboard(
   }
   if (harness) {
     rows.push({
-      model: modelName,
+      model: process.env.RAMP_AUDIT_MODEL ?? "gpt-4o-mini",
       mode: "harness",
       recall: harness.recall,
       precision: harness.precision,

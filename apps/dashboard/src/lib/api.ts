@@ -29,10 +29,13 @@ export interface BenchmarkScoresResponse {
 
 export interface BenchmarkLeaderboardRow {
   model: string;
+  provider?: string;
+  modelId?: string;
   mode: "naked" | "harness";
   recall: number;
   precision: number;
   tasks: number;
+  computedAt?: string;
 }
 
 export interface LiveRunResponse {

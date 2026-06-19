@@ -53,7 +53,7 @@ export function ScoresPage() {
         <p className="mt-1 text-sm text-[var(--color-muted-foreground)]">
           {loading
             ? "Loading benchmark results…"
-            : `Naked vs harness on ${data?.taskCount ?? 0} curated tasks`}
+            : `Naked vs harness · ${leaderboard.data?.length ? `${leaderboard.data.length / 2} model(s)` : "latest run"} · ${data?.taskCount ?? 0} tasks`}
         </p>
         {usingMock && (
           <p className="mt-1 text-xs text-amber-300">
@@ -127,7 +127,9 @@ export function ScoresPage() {
       <Card>
         <CardHeader>
           <CardTitle className="text-base">Leaderboard</CardTitle>
-          <CardDescription>Latest benchmark run</CardDescription>
+          <CardDescription>
+            Model × mode matrix (OpenAI now; Claude/Gemini when keys are added)
+          </CardDescription>
         </CardHeader>
         <CardContent className="overflow-x-auto">
           <table className="w-full min-w-[640px] text-left text-sm">
