@@ -13,10 +13,16 @@
   },
   "scripts": {
     "build": "tsc -b",
-    "clean": "tsc -b --clean"
+    "clean": "tsc -b --clean",
+    "mine": "tsx --env-file=../../.env src/mine.ts",
+    "curate": "tsx --env-file=../../.env src/curate.ts"
   },
   "dependencies": {
+    "@octokit/rest": "^21.1.1",
     "@ramp/shared": "workspace:*",
     "@ramp/scoring": "workspace:*"
+  },
+  "devDependencies": {
+    "tsx": "^4.22.4"
   }
 }

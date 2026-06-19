@@ -12,7 +12,8 @@
     "build": "tsc -b",
     "typecheck": "tsc -b",
     "clean": "tsc -b --clean",
-    "dev:dashboard": "pnpm --filter @ramp/dashboard dev"
+    "dev:dashboard": "pnpm --filter @ramp/dashboard dev",
+    "dev:control-plane": "pnpm --filter @ramp/control-plane serve"
   },
   "devDependencies": {
     "@types/node": "^22.10.2",

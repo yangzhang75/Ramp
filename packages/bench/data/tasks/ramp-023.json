@@ -1,0 +1,22 @@
+{
+  "id": "ramp-023",
+  "repoUrl": "https://github.com/shukik73/shukik73-reviewguard-app",
+  "framework": "javascript",
+  "expectedFindings": [
+    {
+      "type": "keyboard_navigation",
+      "wcagRule": "2.1.1",
+      "file": "public/js/app.js",
+      "line": 1543,
+      "expectedFix": "Prevent keyboard shortcuts from triggering while typing in editable controls."
+    }
+  ],
+  "createdAt": "2026-06-19T09:20:58.529Z",
+  "baseCommit": "27584d639639b15c7d029bac179d9ff6d70d9447",
+  "fixCommit": "906080e3f3f04f83a26392aae50ae537be43f8a2",
+  "sourcePr": {
+    "repo": "shukik73/shukik73-reviewguard-app",
+    "pr_number": 212,
+    "title": "Fix P1 audit findings: SMS opt-out, CSV injection, owner alert, orphan sends, a11y"
+  }
+}

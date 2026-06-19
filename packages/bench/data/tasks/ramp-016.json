@@ -1,0 +1,22 @@
+{
+  "id": "ramp-016",
+  "repoUrl": "https://github.com/ZhTing-twn/TOEIC",
+  "framework": "unknown",
+  "expectedFindings": [
+    {
+      "type": "missing_alt_text",
+      "wcagRule": "1.1.1",
+      "file": "script.js",
+      "line": 1784,
+      "expectedFix": "Add alt text for images in questions"
+    }
+  ],
+  "createdAt": "2026-06-19T09:18:29.414Z",
+  "baseCommit": "c0e7d6ad175522cad3b167e15ccc3677b54b0be7",
+  "fixCommit": "2a36529f12e7fed1e97228c289eb4dc8b75a1498",
+  "sourcePr": {
+    "repo": "ZhTing-twn/TOEIC",
+    "pr_number": 33,
+    "title": "Support local question images for Listening Part 1 and Reading Part 7"
+  }
+}

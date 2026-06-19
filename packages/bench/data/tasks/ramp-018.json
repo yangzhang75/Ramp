@@ -1,0 +1,22 @@
+{
+  "id": "ramp-018",
+  "repoUrl": "https://github.com/Umbrella-io/devtrack",
+  "framework": "next",
+  "expectedFindings": [
+    {
+      "type": "missing_landmarks",
+      "wcagRule": "4.1.2",
+      "file": "src/components/GoalTracker.tsx",
+      "line": 690,
+      "expectedFix": "Added ARIA attributes to the goal progress bar for better accessibility."
+    }
+  ],
+  "createdAt": "2026-06-19T09:18:43.917Z",
+  "baseCommit": "9af3a534735a3ac3d412933eec41fa59c7cc73e4",
+  "fixCommit": "612493145c0fbef0dbd883632ef0cfd1680ee4e4",
+  "sourcePr": {
+    "repo": "Umbrella-io/devtrack",
+    "pr_number": 2531,
+    "title": "fix(a11y): add ARIA attributes to goal progress bar (#950)"
+  }
+}

@@ -8,8 +8,9 @@
  * confirmed violation via submit_finding.
  */
 import { anthropic } from "@ai-sdk/anthropic";
+import { openai } from "@ai-sdk/openai";
 import { AxeBuilder } from "@axe-core/playwright";
-import { generateText, stepCountIs, tool } from "ai";
+import { generateText, stepCountIs, tool, type LanguageModel } from "ai";
 import { z } from "zod";
 import type { Finding, Severity, ViolationType } from "@ramp/shared";
 import { formatTree, getAccessibilityTree } from "./a11y-tree.js";
@@ -90,6 +91,31 @@ const findingSchema = z.object({
     .describe("what you observed that proves this (SR output, ratio, etc.)"),
 });
 
+function resolveAuditModel(): LanguageModel {
+  const provider =
+    process.env.RAMP_AUDIT_PROVIDER ??
+    (process.env.ANTHROPIC_API_KEY
+      ? "anthropic"
+      : process.env.OPENAI_API_KEY
+        ? "openai"
+        : "anthropic");
+  const modelName =
+    process.env.RAMP_AUDIT_MODEL ??
+    (provider === "openai" ? "gpt-4o-mini" : "claude-sonnet-4-6");
+
+  if (provider === "openai") {
+    if (!process.env.OPENAI_API_KEY) {
+      throw new Error("OPENAI_API_KEY is not set");
+    }
+    return openai(modelName);
+  }
+
+  if (!process.env.ANTHROPIC_API_KEY) {
+    throw new Error("ANTHROPIC_API_KEY is not set");
+  }
+  return anthropic(modelName);
+}
+
 /**
  * Audits a page and returns the violations the harness-equipped model found.
  */
@@ -97,7 +123,7 @@ export async function runAudit(input: AuditInput): Promise<Finding[]> {
   const target = input.url ?? input.repo;
   if (!target) throw new Error("runAudit requires `url` or `repo`");
   const runId = input.runId ?? "audit";
-  const model = process.env.RAMP_AUDIT_MODEL ?? "claude-sonnet-4-6";
+  const model = resolveAuditModel();
 
   const page = await launchPage(target);
   const findings: Finding[] = [];
@@ -182,7 +208,7 @@ export async function runAudit(input: AuditInput): Promise<Finding[]> {
     };
 
     await generateText({
-      model: anthropic(model),
+      model,
       maxOutputTokens: 8000,
       stopWhen: stepCountIs(input.maxSteps ?? 25),
       system: input.hints

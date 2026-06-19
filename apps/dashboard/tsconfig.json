@@ -1,13 +1,7 @@
 {
-  "extends": "../../tsconfig.base.json",
-  "compilerOptions": {
-    "rootDir": "src",
-    "outDir": "dist"
-  },
-  "include": ["src"],
+  "files": [],
   "references": [
-    { "path": "../../packages/shared" },
-    { "path": "../../packages/control-plane" },
-    { "path": "../../packages/scoring" }
+    { "path": "./tsconfig.app.json" },
+    { "path": "./tsconfig.node.json" }
   ]
 }

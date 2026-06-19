@@ -13,9 +13,18 @@
   },
   "scripts": {
     "build": "tsc -b",
-    "clean": "tsc -b --clean"
+    "clean": "tsc -b --clean",
+    "score": "tsx --env-file=../../.env src/score.ts"
   },
   "dependencies": {
-    "@ramp/shared": "workspace:*"
+    "@ai-sdk/anthropic": "^3.0.85",
+    "@ai-sdk/openai": "^2.0.52",
+    "@ramp/harness": "workspace:*",
+    "@ramp/shared": "workspace:*",
+    "ai": "^6.0.207",
+    "zod": "^4.4.3"
+  },
+  "devDependencies": {
+    "tsx": "^4.22.4"
   }
 }
