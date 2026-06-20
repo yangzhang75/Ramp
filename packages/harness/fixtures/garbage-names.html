@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Ramp demo — names present but semantically empty</title>
+    <style>
+      body { font-family: system-ui, sans-serif; margin: 2rem; color: #111; background: #fff; }
+      .icon-btn { border: none; background: #1565c0; padding: 8px; border-radius: 6px; }
+      .icon-btn svg { width: 20px; height: 20px; fill: #fff; display: block; }
+      a { color: #0b5cad; }
+    </style>
+  </head>
+  <body>
+    <main>
+      <h1>Acme Dashboard</h1>
+
+      <!-- axe PASSES all of these (a name exists) — but the names are useless. -->
+
+      <!-- garbage alt: placeholder word -->
+      <img src="https://via.placeholder.com/200x80" alt="image" />
+      <!-- garbage alt: filename -->
+      <img src="https://via.placeholder.com/200x80" alt="DSC_0042.JPG" />
+
+      <!-- garbage button name -->
+      <button class="icon-btn" aria-label="button">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21 21l-4.35-4.35M11 18a7 7 0 1 1 0-14 7 7 0 0 1 0 14z" /></svg>
+      </button>
+
+      <!-- vague link text -->
+      <p><a href="/annual-report-2024.pdf">click here</a> to get the report.</p>
+      <p>For details, <a href="/pricing">read more</a>.</p>
+
+      <!-- GOOD examples (should be judged meaningful) -->
+      <img src="https://via.placeholder.com/200x80" alt="Acme company logo" />
+      <button class="icon-btn" aria-label="Search">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21 21l-4.35-4.35M11 18a7 7 0 1 1 0-14 7 7 0 0 1 0 14z" /></svg>
+      </button>
+      <p><a href="/annual-report-2024.pdf">Download the 2024 annual report (PDF)</a></p>
+    </main>
+  </body>
+</html>

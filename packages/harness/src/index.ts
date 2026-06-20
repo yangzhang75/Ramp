@@ -21,3 +21,7 @@ export type { ContrastResult, FocusStop } from "./inspectors.js";
 export { launchPage, closePage } from "./browser.js";
 export { axeScan } from "./axe.js";
 export type { AxeViolationSummary } from "./axe.js";
+export { reviewSemanticQuality } from "./semantic-review.js";
+export type { SemanticIssue, SemanticKind } from "./semantic-review.js";
+export { runVsAxe } from "./vs-axe.js";
+export type { VsAxeReport } from "./vs-axe.js";
