@@ -1,0 +1,27 @@
+{
+  "id": "ramp-026",
+  "repoUrl": "https://github.com/freedomofpress/securedrop-client",
+  "framework": "unknown",
+  "expectedFindings": [
+    {
+      "type": "low_color_contrast",
+      "wcagRule": "1.4.3",
+      "file": "app/src/renderer/index.css",
+      "expectedFix": "Increase focus indicator contrast globally for better visibility."
+    },
+    {
+      "type": "low_color_contrast",
+      "wcagRule": "1.4.3",
+      "file": "app/src/renderer/index.tsx",
+      "expectedFix": "Adjust color for disabled text to ensure readability on light backgrounds."
+    }
+  ],
+  "createdAt": "2026-06-19T23:57:25.428Z",
+  "baseCommit": "4f8e8e5890db4d33bfd511ae4691d6bf4b2dc648",
+  "fixCommit": "daea26c144334d66eaf46b3ee4edfb7b8f6eb5cf",
+  "sourcePr": {
+    "repo": "freedomofpress/securedrop-client",
+    "pr_number": 3474,
+    "title": "Accessibility: Fix contrast issues"
+  }
+}

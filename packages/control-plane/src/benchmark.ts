@@ -8,6 +8,12 @@ import { desc, eq, like } from "drizzle-orm";
 import type { Db, Finding } from "@ramp/shared";
 import { findings, runs, scores } from "@ramp/shared/db";
 import { computeScore } from "@ramp/scoring";
+import {
+  computeBatchMetricsForAuditMode,
+  countTasksByAuditMode,
+  latestScoreBatchId,
+  loadBenchTasksFromDisk,
+} from "@ramp/scoring";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const REPO_ROOT = join(__dirname, "../../..");
@@ -30,6 +36,16 @@ export interface BenchmarkScoresResponse {
   naked: BenchmarkModeMetrics | null;
   harness: BenchmarkModeMetrics | null;
   taskCount: number;
+  htmlLive: {
+    naked: BenchmarkModeMetrics | null;
+    harness: BenchmarkModeMetrics | null;
+    taskCount: number;
+  } | null;
+  taskCounts: {
+    all: number;
+    htmlLive: number;
+    sourceCode: number;
+  };
 }
 
 export interface BenchmarkLeaderboardRow {
@@ -54,6 +70,30 @@ export interface BenchmarkPrCard {
   beforeViolations: number;
   afterViolations: number;
   taskId: string;
+}
+
+function decodeDetectionMetrics(
+  mode: "naked" | "harness",
+  metrics: {
+    recall: number;
+    precision: number;
+    expected: number;
+    truePositives: number;
+    detected: number;
+  },
+  runId: string,
+  computedAt: string,
+): BenchmarkModeMetrics {
+  return {
+    mode,
+    recall: metrics.recall,
+    precision: metrics.precision,
+    expected: metrics.expected,
+    truePositives: metrics.truePositives,
+    detected: metrics.detected,
+    runId,
+    computedAt,
+  };
 }
 
 function decodeBenchmarkScore(
@@ -116,6 +156,11 @@ function readLeaderboardFile(): {
     computedAt: string;
     naked: { recall: number; precision: number; expected: number; truePositives: number; detected: number };
     harness: { recall: number; precision: number; expected: number; truePositives: number; detected: number };
+    htmlLive?: {
+      taskCount: number;
+      naked: { recall: number; precision: number; expected: number; truePositives: number; detected: number };
+      harness: { recall: number; precision: number; expected: number; truePositives: number; detected: number };
+    };
   }>;
 } {
   if (!existsSync(LEADERBOARD_PATH)) return { entries: [] };
@@ -128,6 +173,11 @@ function readLeaderboardFile(): {
       computedAt: string;
       naked: { recall: number; precision: number; expected: number; truePositives: number; detected: number };
       harness: { recall: number; precision: number; expected: number; truePositives: number; detected: number };
+      htmlLive?: {
+        taskCount: number;
+        naked: { recall: number; precision: number; expected: number; truePositives: number; detected: number };
+        harness: { recall: number; precision: number; expected: number; truePositives: number; detected: number };
+      };
     }>;
   };
 }
@@ -138,8 +188,57 @@ function latestLeaderboardEntry() {
   return [...file.entries].sort((a, b) => b.computedAt.localeCompare(a.computedAt))[0]!;
 }
 
+function htmlLiveFromLeaderboard(
+  entry: NonNullable<ReturnType<typeof latestLeaderboardEntry>>,
+): BenchmarkScoresResponse["htmlLive"] {
+  if (!entry.htmlLive) return null;
+  const prefix = `leaderboard:${entry.provider}:${entry.model}`;
+  return {
+    taskCount: entry.htmlLive.taskCount,
+    naked: decodeDetectionMetrics(
+      "naked",
+      entry.htmlLive.naked,
+      `${prefix}:html-live:naked`,
+      entry.computedAt,
+    ),
+    harness: decodeDetectionMetrics(
+      "harness",
+      entry.htmlLive.harness,
+      `${prefix}:html-live:harness`,
+      entry.computedAt,
+    ),
+  };
+}
+
+function htmlLiveFromDb(db: Db): BenchmarkScoresResponse["htmlLive"] {
+  const batchId = latestScoreBatchId(db);
+  if (!batchId) return null;
+  const split = computeBatchMetricsForAuditMode(db, batchId, "html-live");
+  if (!split) return null;
+  const computedAt = new Date().toISOString();
+  return {
+    taskCount: split.naked.tasks,
+    naked: decodeDetectionMetrics(
+      "naked",
+      split.naked,
+      `bench:html-live:naked:${batchId}`,
+      computedAt,
+    ),
+    harness: decodeDetectionMetrics(
+      "harness",
+      split.harness,
+      `bench:html-live:harness:${batchId}`,
+      computedAt,
+    ),
+  };
+}
+
 export function getBenchmarkScores(db: Db): BenchmarkScoresResponse {
+  const taskCounts = countTasksByAuditMode(loadBenchTasksFromDisk());
   const latest = latestLeaderboardEntry();
+  const htmlLive =
+    (latest && htmlLiveFromLeaderboard(latest)) ?? htmlLiveFromDb(db);
+
   if (latest) {
     return {
       naked: {
@@ -163,6 +262,8 @@ export function getBenchmarkScores(db: Db): BenchmarkScoresResponse {
         computedAt: latest.computedAt,
       },
       taskCount: latest.taskCount,
+      htmlLive,
+      taskCounts,
     };
   }
 
@@ -191,6 +292,8 @@ export function getBenchmarkScores(db: Db): BenchmarkScoresResponse {
     naked: nakedRow ? decodeBenchmarkScore(nakedRow, "naked") : null,
     harness: harnessRow ? decodeBenchmarkScore(harnessRow, "harness") : null,
     taskCount,
+    htmlLive: htmlLiveFromDb(db),
+    taskCounts,
   };
 }
 

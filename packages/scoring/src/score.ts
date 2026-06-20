@@ -34,12 +34,16 @@ import {
   readSourceWindow,
   type AuditContext,
 } from "./audit-context.js";
+import { resolveAuditMode } from "@ramp/shared";
 import { gradeDetection } from "./match.js";
+import { aggregateDetectionMetrics } from "./split-metrics.js";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const TASKS_DIR = join(__dirname, "../../bench/data/tasks");
 
 const SCORE_LIMIT = Number(process.env.SCORE_LIMIT ?? 0);
+/** When set to `html-live` or `source-code`, only score matching tasks. */
+const AUDIT_MODE_FILTER = process.env.AUDIT_MODE?.trim().toLowerCase();
 const VIOLATION_TYPES = [
   "missing_alt_text",
   "missing_form_labels",
@@ -262,19 +266,7 @@ function aggregateMetrics(
   mode: "naked" | "harness",
   perTask: Array<{ expected: number; truePositives: number; detected: number }>,
 ): DetectionMetrics {
-  const expected = perTask.reduce((sum, row) => sum + row.expected, 0);
-  const truePositives = perTask.reduce((sum, row) => sum + row.truePositives, 0);
-  const detected = perTask.reduce((sum, row) => sum + row.detected, 0);
-
-  return {
-    mode,
-    tasks: perTask.length,
-    expected,
-    truePositives,
-    detected,
-    recall: expected === 0 ? 0 : truePositives / expected,
-    precision: detected === 0 ? 0 : truePositives / detected,
-  };
+  return aggregateDetectionMetrics(mode, perTask);
 }
 
 function persistRun(
@@ -344,6 +336,7 @@ export async function scoreBenchmark(
 ): Promise<{
   naked: DetectionMetrics;
   harness: DetectionMetrics;
+  htmlLive?: { naked: DetectionMetrics; harness: DetectionMetrics };
 }> {
   const db = getDb();
   ensureSchema(db);
@@ -364,12 +357,18 @@ export async function scoreBenchmark(
   process.env.RAMP_AUDIT_PROVIDER = provider;
   process.env.RAMP_AUDIT_MODEL = model;
 
-  const tasks = loadBenchTaskRecords();
+  let tasks = loadBenchTaskRecords();
+  if (AUDIT_MODE_FILTER === "html-live" || AUDIT_MODE_FILTER === "source-code") {
+    tasks = tasks.filter((task) => resolveAuditMode(task) === AUDIT_MODE_FILTER);
+    console.log(
+      `[score] auditMode filter: ${AUDIT_MODE_FILTER} (${tasks.length} tasks)`,
+    );
+  }
   const limited =
     SCORE_LIMIT > 0 ? tasks.slice(0, SCORE_LIMIT) : tasks;
 
   console.log(
-    `[score] running ${limited.length}/${tasks.length} tasks (${modelLabel})`,
+    `[score] running ${limited.length}/${loadBenchTaskRecords().length} tasks (${modelLabel})`,
   );
 
   const nakedRows: Array<{
@@ -382,6 +381,8 @@ export async function scoreBenchmark(
     truePositives: number;
     detected: number;
   }> = [];
+  const nakedHtmlLiveRows: typeof nakedRows = [];
+  const harnessHtmlLiveRows: typeof harnessRows = [];
 
   const batchId = Date.now();
   const runMeta = { modelLabel, providerModel };
@@ -439,6 +440,18 @@ export async function scoreBenchmark(
         truePositives: harnessGrade.truePositives,
         detected: harnessFindings.length,
       });
+      if (resolveAuditMode(task) === "html-live") {
+        nakedHtmlLiveRows.push({
+          expected: task.expectedFindings.length,
+          truePositives: nakedGrade.truePositives,
+          detected: nakedFindings.length,
+        });
+        harnessHtmlLiveRows.push({
+          expected: task.expectedFindings.length,
+          truePositives: harnessGrade.truePositives,
+          detected: harnessFindings.length,
+        });
+      }
       console.log(
         `[score]   harness recall ${(harnessGrade.recall * 100).toFixed(1)}% precision ${(harnessGrade.precision * 100).toFixed(1)}%`,
       );
@@ -455,6 +468,14 @@ export async function scoreBenchmark(
 
   const naked = aggregateMetrics("naked", nakedRows);
   const harness = aggregateMetrics("harness", harnessRows);
+  const htmlLiveNaked =
+    nakedHtmlLiveRows.length > 0
+      ? aggregateMetrics("naked", nakedHtmlLiveRows)
+      : null;
+  const htmlLiveHarness =
+    harnessHtmlLiveRows.length > 0
+      ? aggregateMetrics("harness", harnessHtmlLiveRows)
+      : null;
 
   persistAggregateScore(db, nakedAggregateRunId, naked);
   persistAggregateScore(db, harnessAggregateRunId, harness);
@@ -468,10 +489,26 @@ export async function scoreBenchmark(
       computedAt: new Date().toISOString(),
       naked,
       harness,
+      ...(htmlLiveNaked && htmlLiveHarness
+        ? {
+            htmlLive: {
+              taskCount: nakedHtmlLiveRows.length,
+              naked: htmlLiveNaked,
+              harness: htmlLiveHarness,
+            },
+          }
+        : {}),
     });
   }
 
-  return { naked, harness };
+  return {
+    naked,
+    harness,
+    htmlLive:
+      htmlLiveNaked && htmlLiveHarness
+        ? { naked: htmlLiveNaked, harness: htmlLiveHarness }
+        : undefined,
+  };
 }
 
 export { gradeDetection, matchFinding } from "./match.js";
@@ -482,14 +519,23 @@ const isMain =
 
 if (isMain) {
   scoreBenchmark()
-    .then(({ naked, harness }) => {
-      console.log("\n[score] done");
+    .then(({ naked, harness, htmlLive }) => {
+      console.log("\n[score] done — all tasks");
       console.log(
         `  naked   recall ${(naked.recall * 100).toFixed(1)}% | precision ${(naked.precision * 100).toFixed(1)}% (${naked.truePositives}/${naked.expected} expected, ${naked.detected} detected)`,
       );
       console.log(
         `  harness recall ${(harness.recall * 100).toFixed(1)}% | precision ${(harness.precision * 100).toFixed(1)}% (${harness.truePositives}/${harness.expected} expected, ${harness.detected} detected)`,
       );
+      if (htmlLive) {
+        console.log("\n[score] html-live subset (fair harness comparison)");
+        console.log(
+          `  naked   recall ${(htmlLive.naked.recall * 100).toFixed(1)}% | precision ${(htmlLive.naked.precision * 100).toFixed(1)}% (${htmlLive.naked.truePositives}/${htmlLive.naked.expected} expected)`,
+        );
+        console.log(
+          `  harness recall ${(htmlLive.harness.recall * 100).toFixed(1)}% | precision ${(htmlLive.harness.precision * 100).toFixed(1)}% (${htmlLive.harness.truePositives}/${htmlLive.harness.expected} expected)`,
+        );
+      }
     })
     .catch((error) => {
       console.error("[score] failed:", error);

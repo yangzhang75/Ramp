@@ -1,0 +1,27 @@
+{
+  "id": "ramp-037",
+  "repoUrl": "https://github.com/romarin-hsieh/investment-dashboard",
+  "framework": "vue",
+  "expectedFindings": [
+    {
+      "type": "low_color_contrast",
+      "wcagRule": "1.4.3",
+      "file": "src/style.css",
+      "expectedFix": "Updated color tokens to ensure text/background pairs meet WCAG AA contrast ratio."
+    },
+    {
+      "type": "low_color_contrast",
+      "wcagRule": "1.4.3",
+      "file": "src/style.css",
+      "expectedFix": "Adjusted text colors for success, danger, and warning states to improve contrast."
+    }
+  ],
+  "createdAt": "2026-06-19T23:58:18.582Z",
+  "baseCommit": "b349c275560a8663a7e8e368d788441b944ac4e4",
+  "fixCommit": "eb830fbbdd2ca45cff6878a3293f09f9fc72bf31",
+  "sourcePr": {
+    "repo": "romarin-hsieh/investment-dashboard",
+    "pr_number": 51,
+    "title": "fix(a11y): AA contrast token variants for brand/status/muted/tags (PR ⑤-1)"
+  }
+}

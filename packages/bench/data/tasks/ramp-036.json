@@ -1,0 +1,27 @@
+{
+  "id": "ramp-036",
+  "repoUrl": "https://github.com/maonakamoto/revampit",
+  "framework": "next",
+  "expectedFindings": [
+    {
+      "type": "missing_focus_indicator",
+      "wcagRule": "2.4.7",
+      "file": "src/components/admin/HirnSlideOver.tsx",
+      "expectedFix": "Added focus trap to ensure focus is managed within the dialog."
+    },
+    {
+      "type": "missing_focus_indicator",
+      "wcagRule": "2.4.7",
+      "file": "src/components/layout/MobileMenu.tsx",
+      "expectedFix": "Added focus trap to manage focus within the mobile menu."
+    }
+  ],
+  "createdAt": "2026-06-19T23:57:49.298Z",
+  "baseCommit": "45e13e7814657f80be98d7446cfdd5ee694659a6",
+  "fixCommit": "881d0c193964ce77bad5e6c36e16e3cb857fe7f8",
+  "sourcePr": {
+    "repo": "maonakamoto/revampit",
+    "pr_number": 150,
+    "title": "a11y(overlays): focus-trap HirnSlideOver & MobileMenu via shared hook"
+  }
+}

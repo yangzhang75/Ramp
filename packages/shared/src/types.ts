@@ -53,11 +53,19 @@ export interface AnnotatedFinding {
   expectedFix?: string;
 }
 
+/** How a benchmark task is scored — see {@link inferAuditMode}. */
+export type AuditMode = "html-live" | "source-code";
+
 export interface BenchTask {
   id: string;
   repoUrl: string;
   branch?: string;
   framework?: string;
+  /**
+   * Optional explicit tag. When omitted, scoring infers from
+   * `expectedFindings[].file` extensions (all `.html`/`.htm` → html-live).
+   */
+  auditMode?: AuditMode;
   /** Hand-annotated ground truth used to compute detection/fix recall. */
   expectedFindings: AnnotatedFinding[];
   createdAt: string;

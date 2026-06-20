@@ -11,6 +11,12 @@ export interface LeaderboardEntry {
   computedAt: string;
   naked: DetectionMetrics;
   harness: DetectionMetrics;
+  /** Subset where all expected files are HTML — fair harness comparison. */
+  htmlLive?: {
+    taskCount: number;
+    naked: DetectionMetrics;
+    harness: DetectionMetrics;
+  };
 }
 
 export interface LeaderboardFile {

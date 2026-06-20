@@ -1,0 +1,21 @@
+{
+  "id": "ramp-041",
+  "repoUrl": "https://github.com/howard86/masquerade",
+  "framework": "unknown",
+  "expectedFindings": [
+    {
+      "type": "keyboard_navigation",
+      "wcagRule": "2.1.1",
+      "file": "lib/widgets/desktop/desktop_icon_grid.dart",
+      "expectedFix": "Added keyboard navigation support for launcher tiles using FocusableActionDetector."
+    }
+  ],
+  "createdAt": "2026-06-20T00:00:43.022Z",
+  "baseCommit": "ee02316a4da92e5b6fb7e2af823ea9a224c1e54b",
+  "fixCommit": "dbffc2913896b65ba0a95dce6bbd74caff6cfd7d",
+  "sourcePr": {
+    "repo": "howard86/masquerade",
+    "pr_number": 101,
+    "title": "feat(a11y): keyboard navigation for the desktop icon grid"
+  }
+}

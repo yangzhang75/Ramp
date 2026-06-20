@@ -71,6 +71,8 @@ export function useBenchmarkScores(): AsyncState<BenchmarkScoresResponse> & {
   chartData: Array<{ mode: string; recall: number; precision: number }>;
   naked: BenchmarkModeMetrics | null;
   harness: BenchmarkModeMetrics | null;
+  htmlLive: BenchmarkScoresResponse["htmlLive"];
+  taskCounts: BenchmarkScoresResponse["taskCounts"] | null;
 } {
   const [state, setState] = useState(initialState<BenchmarkScoresResponse>());
 
@@ -119,7 +121,14 @@ export function useBenchmarkScores(): AsyncState<BenchmarkScoresResponse> & {
           precision: Math.round(row.precision * 100),
         }));
 
-  return { ...state, chartData, naked, harness };
+  return {
+    ...state,
+    chartData,
+    naked,
+    harness,
+    htmlLive: state.data?.htmlLive ?? null,
+    taskCounts: state.data?.taskCounts ?? null,
+  };
 }
 
 export function useLeaderboard(): AsyncState<BenchmarkLeaderboardRow[]> {

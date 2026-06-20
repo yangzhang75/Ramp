@@ -1,0 +1,29 @@
+{
+  "id": "ramp-029",
+  "repoUrl": "https://github.com/librespeed/speedtest",
+  "framework": "javascript",
+  "expectedFindings": [
+    {
+      "type": "icon_button_accessible_names",
+      "wcagRule": "4.1.2",
+      "file": "examples/example-multipleServers-full.html",
+      "line": 126,
+      "expectedFix": "Add aria-label to #startStopBtn for screen reader accessibility"
+    },
+    {
+      "type": "icon_button_accessible_names",
+      "wcagRule": "4.1.2",
+      "file": "examples/example-multipleServers-pretty.html",
+      "line": 42,
+      "expectedFix": "Add aria-label to #startStopBtn for screen reader accessibility"
+    }
+  ],
+  "createdAt": "2026-06-19T23:57:39.393Z",
+  "baseCommit": "da29334083133267615d6f6a034b3ab0caab83b2",
+  "fixCommit": "03d62a0ca1f8e6d7feb6009c4cf71366098a783a",
+  "sourcePr": {
+    "repo": "librespeed/speedtest",
+    "pr_number": 785,
+    "title": "fix: add aria-label to #startStopBtn for screen reader accessibility"
+  }
+}

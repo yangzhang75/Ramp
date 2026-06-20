@@ -47,3 +47,10 @@ export function computeScore(findings: Finding[]): ScoreBreakdown {
     totalViolations: findings.length,
   };
 }
+
+export {
+  computeBatchMetricsForAuditMode,
+  countTasksByAuditMode,
+  latestScoreBatchId,
+  loadBenchTasksFromDisk,
+} from "./split-metrics.js";

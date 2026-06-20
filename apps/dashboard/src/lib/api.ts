@@ -25,6 +25,16 @@ export interface BenchmarkScoresResponse {
   naked: BenchmarkModeMetrics | null;
   harness: BenchmarkModeMetrics | null;
   taskCount: number;
+  htmlLive: {
+    naked: BenchmarkModeMetrics | null;
+    harness: BenchmarkModeMetrics | null;
+    taskCount: number;
+  } | null;
+  taskCounts: {
+    all: number;
+    htmlLive: number;
+    sourceCode: number;
+  };
 }
 
 export interface BenchmarkLeaderboardRow {

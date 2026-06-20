@@ -1,0 +1,33 @@
+{
+  "id": "ramp-031",
+  "repoUrl": "https://github.com/mikelpzm/EstoicApp",
+  "framework": "react",
+  "expectedFindings": [
+    {
+      "type": "missing_landmarks",
+      "wcagRule": "2.4.1",
+      "file": "src/App.jsx",
+      "expectedFix": "Added skip link for better navigation to main content."
+    },
+    {
+      "type": "missing_landmarks",
+      "wcagRule": "2.4.1",
+      "file": "src/App.jsx",
+      "expectedFix": "Added id to main element for landmark navigation."
+    },
+    {
+      "type": "missing_landmarks",
+      "wcagRule": "2.4.1",
+      "file": "src/App.jsx",
+      "expectedFix": "Added role presentation to modal overlays."
+    }
+  ],
+  "createdAt": "2026-06-19T23:57:40.853Z",
+  "baseCommit": "82ec10b51173aa3799b56bc4e4fca0d401dfac0c",
+  "fixCommit": "a9da204ed83c6233c83f704231376666bfc6ee1e",
+  "sourcePr": {
+    "repo": "mikelpzm/EstoicApp",
+    "pr_number": 18,
+    "title": "Improve WCAG AA accessibility"
+  }
+}

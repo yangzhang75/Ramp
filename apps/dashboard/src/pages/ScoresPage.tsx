@@ -1,3 +1,4 @@
+import { useState } from "react";
 import {
   Bar,
   BarChart,
@@ -10,6 +11,7 @@ import {
 } from "recharts";
 import { BarChart3, TrendingUp } from "lucide-react";
 import { Badge } from "../components/ui/badge.js";
+import { Button } from "../components/ui/button.js";
 import {
   Card,
   CardContent,
@@ -18,20 +20,63 @@ import {
   CardTitle,
 } from "../components/ui/card.js";
 import { useBenchmarkScores, useLeaderboard } from "../hooks/useRampData.js";
+import type { BenchmarkModeMetrics } from "../lib/api.js";
 import { formatPercent } from "../lib/utils.js";
 import { mockAfterScore, mockBeforeScore } from "../mock-data.js";
 
+type ScoreView = "html-live" | "all";
+
+function metricsChart(
+  naked: BenchmarkModeMetrics | null,
+  harness: BenchmarkModeMetrics | null,
+) {
+  if (!naked || !harness) return [];
+  return [
+    {
+      mode: "naked",
+      recall: Math.round(naked.recall * 100),
+      precision: Math.round(naked.precision * 100),
+    },
+    {
+      mode: "harness",
+      recall: Math.round(harness.recall * 100),
+      precision: Math.round(harness.precision * 100),
+    },
+  ];
+}
+
 export function ScoresPage() {
   const {
-    chartData,
-    naked,
-    harness,
+    chartData: allChartData,
+    naked: allNaked,
+    harness: allHarness,
+    htmlLive,
+    taskCounts,
     loading,
     error,
     usingMock,
     data,
   } = useBenchmarkScores();
   const leaderboard = useLeaderboard();
+
+  const hasHtmlLive = Boolean(htmlLive?.naked && htmlLive.harness);
+  const [view, setView] = useState<ScoreView>("html-live");
+
+  const activeView: ScoreView =
+    view === "html-live" && hasHtmlLive ? "html-live" : "all";
+
+  const naked =
+    activeView === "html-live" ? (htmlLive?.naked ?? null) : allNaked;
+  const harness =
+    activeView === "html-live" ? (htmlLive?.harness ?? null) : allHarness;
+  const chartData =
+    activeView === "html-live"
+      ? metricsChart(htmlLive?.naked ?? null, htmlLive?.harness ?? null)
+      : allChartData;
+  const activeTaskCount =
+    activeView === "html-live"
+      ? (htmlLive?.taskCount ?? 0)
+      : (data?.taskCount ?? 0);
 
   const beforeScore = harness
     ? Math.round((1 - harness.detected / Math.max(harness.expected, 1)) * 100)
@@ -53,8 +98,14 @@ export function ScoresPage() {
         <p className="mt-1 text-sm text-[var(--color-muted-foreground)]">
           {loading
             ? "Loading benchmark results…"
-            : `Naked vs harness · ${leaderboard.data?.length ? `${leaderboard.data.length / 2} model(s)` : "latest run"} · ${data?.taskCount ?? 0} tasks`}
+            : `${activeView === "html-live" ? "HTML-live (fair comparison)" : "All tasks"} · ${leaderboard.data?.length ? `${leaderboard.data.length / 2} model(s)` : "latest run"} · ${activeTaskCount} tasks`}
         </p>
+        {taskCounts && (
+          <p className="mt-1 text-xs text-[var(--color-muted-foreground)]">
+            Bench mix: {taskCounts.htmlLive} html-live · {taskCounts.sourceCode}{" "}
+            source-code · {taskCounts.all} total
+          </p>
+        )}
         {usingMock && (
           <p className="mt-1 text-xs text-amber-300">
             Showing mock data — run scoring and start control-plane for live numbers.
@@ -65,6 +116,25 @@ export function ScoresPage() {
         )}
       </div>
 
+      {hasHtmlLive && (
+        <div className="flex flex-wrap gap-2">
+          <Button
+            size="sm"
+            variant={activeView === "html-live" ? "default" : "outline"}
+            onClick={() => setView("html-live")}
+          >
+            HTML-live (fair)
+          </Button>
+          <Button
+            size="sm"
+            variant={activeView === "all" ? "default" : "outline"}
+            onClick={() => setView("all")}
+          >
+            All tasks
+          </Button>
+        </div>
+      )}
+
       <div className="grid gap-4 md:grid-cols-3">
         <Card className="md:col-span-1">
           <CardHeader>
@@ -72,7 +142,11 @@ export function ScoresPage() {
               <TrendingUp className="h-4 w-4 text-[var(--color-primary)]" />
               Detection recall
             </CardTitle>
-            <CardDescription>Harness vs naked recall</CardDescription>
+            <CardDescription>
+              {activeView === "html-live"
+                ? "Harness vs naked on rendered HTML tasks"
+                : "Harness vs naked recall"}
+            </CardDescription>
           </CardHeader>
           <CardContent>
             <div className="flex items-end gap-3">
@@ -87,7 +161,8 @@ export function ScoresPage() {
               </span>
             </div>
             <p className="mt-3 text-sm text-[var(--color-muted-foreground)]">
-              Hits {harness?.truePositives ?? 0}/{harness?.expected ?? 0} expected (harness)
+              Hits {harness?.truePositives ?? 0}/{harness?.expected ?? 0} expected
+              (harness)
             </p>
           </CardContent>
         </Card>
@@ -128,7 +203,8 @@ export function ScoresPage() {
         <CardHeader>
           <CardTitle className="text-base">Leaderboard</CardTitle>
           <CardDescription>
-            Model × mode matrix (OpenAI now; Claude/Gemini when keys are added)
+            Model × mode matrix (all tasks). Use the toggle above for html-live
+            subset from the latest score batch.
           </CardDescription>
         </CardHeader>
         <CardContent className="overflow-x-auto">

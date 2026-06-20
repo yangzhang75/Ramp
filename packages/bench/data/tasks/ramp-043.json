@@ -1,0 +1,21 @@
+{
+  "id": "ramp-043",
+  "repoUrl": "https://github.com/cds0987/DA08-VSF-AI",
+  "framework": "unknown",
+  "expectedFindings": [
+    {
+      "type": "keyboard_navigation",
+      "wcagRule": "2.1.1",
+      "file": "src/frontend/chat/app/components/chat/AnswerBlock.vue",
+      "expectedFix": "Implement keyboard navigation for citation chips."
+    }
+  ],
+  "createdAt": "2026-06-20T00:01:34.607Z",
+  "baseCommit": "589e0cf98ee0473a5bf078bd811fc06856763838",
+  "fixCommit": "62f1828d1aaeb00911787e36caf2c863689a6948",
+  "sourcePr": {
+    "repo": "cds0987/DA08-VSF-AI",
+    "pr_number": 98,
+    "title": "fix(chat): nâng UX citation — nhãn nguồn, panel, a11y bàn phím"
+  }
+}

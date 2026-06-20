@@ -4,6 +4,7 @@
  * runAudit / runFixLoop signatures.
  */
 export * from "./types.js";
+export * from "./audit-mode.js";
 export * from "./audit.js";
 export * from "./fix.js";
 export * as db from "./db/index.js";
