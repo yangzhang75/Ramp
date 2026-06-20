@@ -211,8 +211,20 @@ async function main(): Promise<void> {
           { name: "audit: runAudit (gpt-4o-mini)", op: "ramp.audit.llm" },
           () => runAudit({ url: target, runId: "fix-url", maxSteps: 15 }),
         );
-        const toFix = findings.filter((f) => FIXABLE.includes(f.type)).slice(0, 4);
-        console.log(`[fix:url] audit found ${findings.length}; fixing ${toFix.length}: ${toFix.map((f) => f.type).join(", ")}`);
+        // Fix set = axe-flagged findings (so axe-scorable issues like region/
+        // landmarks always get fixed → score moves) MERGED with the LLM's
+        // findings (richer evidence). One fix per ViolationType; LLM wins ties.
+        const byType = new Map<string, Finding>();
+        for (const f of axeToFindings(beforeAxe, "axe")) {
+          if (FIXABLE.includes(f.type)) byType.set(f.type, f);
+        }
+        for (const f of findings) {
+          if (FIXABLE.includes(f.type)) byType.set(f.type, f);
+        }
+        const toFix = [...byType.values()].slice(0, 5);
+        console.log(
+          `[fix:url] audit: ${findings.length} LLM + axe rules; fixing ${toFix.length} types: ${toFix.map((f) => f.type).join(", ")}`,
+        );
 
         const fixResults = [];
         for (const f of toFix) {
