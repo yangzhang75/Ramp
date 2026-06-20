@@ -20,7 +20,8 @@
     "probe:inspect": "tsx src/probe-inspect.ts",
     "probe:audit": "tsx src/probe-audit.ts",
     "probe:semantic": "tsx src/probe-semantic.ts",
-    "vs:axe": "tsx src/vs-axe.ts"
+    "vs:axe": "tsx src/vs-axe.ts",
+    "vs:axe:suite": "tsx src/vs-axe-suite.ts"
   },
   "dependencies": {
     "@ai-sdk/anthropic": "^3.0.85",
