@@ -75,6 +75,9 @@ importers:
       '@octokit/rest':
         specifier: ^21.1.1
         version: 21.1.1
+      '@ramp/harness':
+        specifier: workspace:*
+        version: link:../harness
       '@ramp/scoring':
         specifier: workspace:*
         version: link:../scoring

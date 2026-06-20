@@ -1,0 +1,88 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Users — Admin Console</title>
+    <style>
+      body { font-family: system-ui, sans-serif; margin: 0; color: #111111; background: #ffffff; }
+      header { background: #0b1220; color: #ffffff; display: flex; align-items: center; justify-content: space-between; padding: 12px 20px; }
+      .top-actions { display: flex; gap: 8px; }
+      .iconbtn { background: #1f2a44; border: none; border-radius: 8px; padding: 8px; cursor: pointer; }
+      .iconbtn svg { width: 20px; height: 20px; fill: #ffffff; display: block; }
+      .layout { display: flex; }
+      nav.side { width: 180px; padding: 16px; border-right: 1px solid #eaeaea; }
+      nav.side a { display: block; color: #1a1a1a; text-decoration: none; padding: 6px 0; }
+      main { padding: 20px 24px; flex: 1; }
+      .toolbar { display: flex; gap: 10px; align-items: center; margin-bottom: 8px; }
+      .search { padding: 8px 12px; border: 1px solid #aab0bd; border-radius: 8px; font-size: 1rem; }
+      .filter-btn { background: #eef1f6; }
+      .filter-btn svg { fill: #1f2a44; }
+      /* Real low-contrast: #a0a0a0 on white = 2.61:1, fails AA. */
+      .count { color: #a0a0a0; font-size: 0.85rem; }
+      /* Decoy: #6b6b6b on white = 5.33:1, PASSES AA. */
+      .hint { color: #6b6b6b; font-size: 0.85rem; }
+      table { border-collapse: collapse; width: 100%; margin-top: 12px; }
+      th, td { text-align: left; padding: 10px; border-bottom: 1px solid #eeeeee; }
+      .avatar { width: 32px; height: 32px; border-radius: 50%; vertical-align: middle; margin-right: 8px; }
+      .vh { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
+    </style>
+  </head>
+  <body>
+    <header>
+      <strong>Admin Console</strong>
+      <div class="top-actions">
+        <!-- Decoy: refresh icon button HAS an accessible name. -->
+        <button class="iconbtn" aria-label="Refresh data">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M17 7a7 7 0 10.5 9" fill="none" stroke="#fff" stroke-width="2" /></svg>
+        </button>
+        <!-- Decoy: settings icon button named via aria-labelledby. -->
+        <button class="iconbtn" id="settings-btn" aria-labelledby="settings-lbl">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 8a4 4 0 100 8 4 4 0 000-8z" /></svg>
+        </button>
+        <span id="settings-lbl" class="vh">Settings</span>
+      </div>
+    </header>
+    <div class="layout">
+      <nav class="side" aria-label="Sections">
+        <!-- Decoy: decorative brand mark, correctly hidden with alt="". -->
+        <img src="logo-mark.svg" alt="" width="28" height="28" />
+        <a href="#users">Users</a>
+        <a href="#billing">Billing</a>
+        <a href="#audit-log">Audit log</a>
+      </nav>
+      <main>
+        <h1>Users</h1>
+        <div class="toolbar">
+          <!-- Real violation: filter icon button with no accessible name. -->
+          <button class="iconbtn filter-btn" id="filter-btn">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 5h18l-7 8v6l-4-2v-4z" /></svg>
+          </button>
+          <!-- Real violation: search input with placeholder but no label. -->
+          <input class="search" id="user-search" type="text" placeholder="Search users" />
+          <!-- Real violation: low-contrast result count. -->
+          <span class="count" id="result-count">128 results</span>
+        </div>
+        <!-- Decoy: looks muted but passes contrast. -->
+        <p class="hint">Tip: wrap a phrase in quotes for an exact match.</p>
+        <table>
+          <thead>
+            <tr><th>Member</th><th>Role</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <!-- Real violation: informative avatar with no alt text. -->
+              <td><img class="avatar" id="row-avatar" src="avatars/jdoe.jpg" />Jane Doe</td>
+              <td>Admin</td>
+            </tr>
+            <tr>
+              <!-- Decoy: avatar correctly has alt. -->
+              <td><img class="avatar" src="avatars/asmith.jpg" alt="Alan Smith" />Alan Smith</td>
+              <td>Editor</td>
+            </tr>
+          </tbody>
+        </table>
+      </main>
+    </div>
+  </body>
+</html>

@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Deploying with Pipelines — Docs</title>
+    <style>
+      body { font-family: system-ui, sans-serif; margin: 0; color: #111111; background: #ffffff; }
+      header { background: #1a1a2e; color: #ffffff; padding: 14px 22px; }
+      .wrap { display: flex; max-width: 1000px; margin: 0 auto; }
+      nav.toc { width: 220px; padding: 24px 16px; border-right: 1px solid #ececec; }
+      nav.toc a { display: block; color: #0b5; padding: 4px 0; text-decoration: none; }
+      /* Real violation: focus outline removed globally on links. */
+      a:focus { outline: none; }
+      main { padding: 24px; flex: 1; }
+      figure { margin: 20px 0; }
+      figure img { max-width: 480px; width: 100%; height: auto; border: 1px solid #eee; border-radius: 8px; }
+      pre { background: #0f172a; color: #e2e8f0; padding: 14px; border-radius: 8px; overflow:auto; }
+      /* Decoy: #6b6b6b on white = 5.33:1, PASSES AA. */
+      .codecomment { color: #6b6b6b; font-size: 0.85rem; }
+      .extlink svg { width: 14px; height: 14px; fill: #0b5; vertical-align: middle; }
+      hr.sep { border: none; }
+    </style>
+  </head>
+  <body>
+    <header><strong>Pipelines Docs</strong></header>
+    <div class="wrap">
+      <nav class="toc" aria-label="On this page">
+        <a href="#overview">Overview</a>
+        <a href="#diagram">Architecture</a>
+        <a href="#steps">Steps</a>
+        <!-- Decoy: external-link icon button HAS a name. -->
+        <a class="extlink" href="https://example.com/status" aria-label="Status page (opens in new tab)">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14 4h6v6M20 4L9 15" fill="none" stroke="#0b5" stroke-width="2" /></svg>
+        </a>
+      </nav>
+      <main>
+        <h1>Deploying with Pipelines</h1>
+        <p>This guide walks through configuring a deployment pipeline from scratch.</p>
+        <!-- Real violation: heading jumps from h1 straight to h4 (skips h2, h3). -->
+        <h4 id="overview">How a pipeline is structured</h4>
+        <p>A pipeline is a sequence of stages. Each stage runs jobs in order.</p>
+        <figure>
+          <!-- Real violation: architecture diagram image has no alt. -->
+          <img id="arch-diagram" src="diagrams/pipeline-architecture.png" width="480" height="300" />
+          <figcaption>The default three-stage pipeline.</figcaption>
+        </figure>
+        <!-- Decoy: decorative divider, correctly hidden. -->
+        <img src="dot-rule.svg" alt="" width="120" height="6" />
+        <h2 id="steps">Configuration steps</h2>
+        <p>Add a <code>pipeline.yml</code> file to your repository root:</p>
+        <pre>stages:
+  - build
+  - test
+  - deploy</pre>
+        <!-- Decoy: muted note that still passes contrast. -->
+        <p class="codecomment"># The deploy stage only runs on the main branch.</p>
+      </main>
+    </div>
+  </body>
+</html>
