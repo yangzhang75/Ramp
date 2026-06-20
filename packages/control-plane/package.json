@@ -15,6 +15,7 @@
     "build": "tsc -b",
     "clean": "tsc -b --clean",
     "serve": "tsx src/server-main.ts",
+    "fix:demo": "tsx src/scripts/fix-demo.ts",
     "test:pr": "tsc -b && node --env-file-if-exists=../../.env dist/scripts/test-pr.js"
   },
   "dependencies": {
