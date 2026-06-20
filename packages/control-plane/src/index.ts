@@ -45,6 +45,14 @@ export type { RunFixLoopOptions, FixResult };
 export { openPr, preflight, parseTargetRepo } from "./github.js";
 export type { OpenPrOptions, PreflightResult } from "./github.js";
 
+/** Fix loop: sandbox checkout → headless fix → axe verify. */
+export { prepareRepo } from "./sandbox.js";
+export type { PreparedRepo } from "./sandbox.js";
+export { fixOneFinding } from "./fixer.js";
+export type { FixAttempt } from "./fixer.js";
+export { verifyFix, AXE_RULE_FOR_TYPE } from "./verify.js";
+export type { VerifyFixInput, VerifyResult } from "./verify.js";
+
 /** HTTP server + DB wiring. */
 export { createServer, startServer } from "./server.js";
 export {
