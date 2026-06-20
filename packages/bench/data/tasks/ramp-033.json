@@ -1,0 +1,21 @@
+{
+  "id": "ramp-033",
+  "repoUrl": "https://github.com/sebastienrousseau/sebastienrousseau.github.io",
+  "framework": "unknown",
+  "expectedFindings": [
+    {
+      "type": "low_color_contrast",
+      "wcagRule": "1.4.3",
+      "file": "_layouts/index.html",
+      "expectedFix": "Updated color for eyebrow and meta text in newsroom-card to improve contrast"
+    }
+  ],
+  "createdAt": "2026-06-19T23:57:45.071Z",
+  "baseCommit": "78f5cec74484a96850161737471db9a70cde55be",
+  "fixCommit": "624ede0a469dae02d7de9b1b16c6f8e58e43a31e",
+  "sourcePr": {
+    "repo": "sebastienrousseau/sebastienrousseau.github.io",
+    "pr_number": 227,
+    "title": "fix(home): AAA contrast on newsroom-card paper surface — unblock pa11y"
+  }
+}
