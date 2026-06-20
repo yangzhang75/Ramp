@@ -17,7 +17,8 @@
     "mine": "tsx --env-file=../../.env src/mine.ts",
     "curate": "tsx --env-file=../../.env src/curate.ts",
     "curate:html": "tsx src/curate-html.ts",
-    "score:fixtures": "tsx src/score-fixtures.ts"
+    "score:fixtures": "tsx src/score-fixtures.ts",
+    "score:html-live": "tsx src/score-html-live.ts"
   },
   "dependencies": {
     "@octokit/rest": "^21.1.1",

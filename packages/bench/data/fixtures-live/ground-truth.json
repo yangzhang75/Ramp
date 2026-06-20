@@ -1,0 +1,234 @@
+[
+  {
+    "id": "live-account-settings",
+    "file": "account-settings.html",
+    "auditMode": "html-live",
+    "renderDependent": true,
+    "expectedFindings": [
+      {
+        "type": "low_color_contrast",
+        "wcagRule": "1.4.3",
+        "file": "account-settings.html",
+        "line": 13,
+        "expectedFix": "Muted meta text #9a9a9a on white (2.81:1) fails AA — color is in external CSS."
+      },
+      {
+        "type": "low_color_contrast",
+        "wcagRule": "1.4.3",
+        "file": "account-settings.html",
+        "line": 18,
+        "expectedFix": "Field hint #a0a0a0 on white (2.61:1) fails AA — external CSS."
+      },
+      {
+        "type": "missing_form_labels",
+        "wcagRule": "1.3.1, 4.1.2",
+        "file": "account-settings.html",
+        "line": 16,
+        "expectedFix": "Display-name input has no associated label."
+      }
+    ]
+  },
+  {
+    "id": "live-invoice",
+    "file": "invoice.html",
+    "auditMode": "html-live",
+    "renderDependent": true,
+    "expectedFindings": [
+      {
+        "type": "icon_button_accessible_names",
+        "wcagRule": "4.1.2",
+        "file": "invoice.html",
+        "line": 13,
+        "expectedFix": "Download icon button has only an aria-hidden SVG, no accessible name."
+      },
+      {
+        "type": "low_color_contrast",
+        "wcagRule": "1.4.3",
+        "file": "invoice.html",
+        "line": 15,
+        "expectedFix": "Amount-due note #a8a8a8 on white (2.38:1) fails AA — external CSS."
+      },
+      {
+        "type": "low_color_contrast",
+        "wcagRule": "1.4.3",
+        "file": "invoice.html",
+        "line": 16,
+        "expectedFix": "Legal text #9e9e9e on white (2.68:1) fails AA — external CSS."
+      }
+    ]
+  },
+  {
+    "id": "live-news-article",
+    "file": "news-article.html",
+    "auditMode": "html-live",
+    "renderDependent": true,
+    "expectedFindings": [
+      {
+        "type": "low_color_contrast",
+        "wcagRule": "1.4.3",
+        "file": "news-article.html",
+        "line": 14,
+        "expectedFix": "Byline #9a9a9a on white (2.81:1) fails AA — external CSS."
+      },
+      {
+        "type": "missing_alt_text",
+        "wcagRule": "1.1.1",
+        "file": "news-article.html",
+        "line": 16,
+        "expectedFix": "Hero photo has no alt attribute."
+      },
+      {
+        "type": "low_color_contrast",
+        "wcagRule": "1.4.3",
+        "file": "news-article.html",
+        "line": 17,
+        "expectedFix": "Caption #a0a0a0 on white (2.61:1) fails AA — external CSS."
+      }
+    ]
+  },
+  {
+    "id": "live-product-catalog",
+    "file": "product-catalog.html",
+    "auditMode": "html-live",
+    "renderDependent": true,
+    "expectedFindings": [
+      {
+        "type": "missing_landmarks",
+        "wcagRule": "1.3.1, 2.4.1",
+        "file": "product-catalog.html",
+        "line": 10,
+        "expectedFix": "Whole page is bare divs — no main/header/nav landmark."
+      },
+      {
+        "type": "low_color_contrast",
+        "wcagRule": "1.4.3",
+        "file": "product-catalog.html",
+        "line": 16,
+        "expectedFix": "Strikethrough price #9e9e9e on white (2.68:1) fails AA — external CSS."
+      },
+      {
+        "type": "low_color_contrast",
+        "wcagRule": "1.4.3",
+        "file": "product-catalog.html",
+        "line": 17,
+        "expectedFix": "Availability #a8a8a8 on white (2.38:1) fails AA — external CSS."
+      }
+    ]
+  },
+  {
+    "id": "live-support-ticket",
+    "file": "support-ticket.html",
+    "auditMode": "html-live",
+    "renderDependent": true,
+    "expectedFindings": [
+      {
+        "type": "icon_button_accessible_names",
+        "wcagRule": "4.1.2",
+        "file": "support-ticket.html",
+        "line": 13,
+        "expectedFix": "Close (×) icon button has no accessible name."
+      },
+      {
+        "type": "low_color_contrast",
+        "wcagRule": "1.4.3",
+        "file": "support-ticket.html",
+        "line": 14,
+        "expectedFix": "Timestamp #9a9a9a on white (2.81:1) fails AA — external CSS."
+      },
+      {
+        "type": "missing_form_labels",
+        "wcagRule": "1.3.1, 4.1.2",
+        "file": "support-ticket.html",
+        "line": 16,
+        "expectedFix": "Subject input has placeholder only, no label."
+      }
+    ]
+  },
+  {
+    "id": "live-team-roster",
+    "file": "team-roster.html",
+    "auditMode": "html-live",
+    "renderDependent": true,
+    "expectedFindings": [
+      {
+        "type": "low_color_contrast",
+        "wcagRule": "1.4.3",
+        "file": "team-roster.html",
+        "line": 17,
+        "expectedFix": "Role text #a0a0a0 on white (2.61:1) fails AA — external CSS."
+      },
+      {
+        "type": "missing_alt_text",
+        "wcagRule": "1.1.1",
+        "file": "team-roster.html",
+        "line": 20,
+        "expectedFix": "Member avatar has no alt attribute."
+      },
+      {
+        "type": "low_color_contrast",
+        "wcagRule": "1.4.3",
+        "file": "team-roster.html",
+        "line": 22,
+        "expectedFix": "Last-active #a8a8a8 on white (2.38:1) fails AA — external CSS."
+      }
+    ]
+  },
+  {
+    "id": "live-analytics-report",
+    "file": "analytics-report.html",
+    "auditMode": "html-live",
+    "renderDependent": true,
+    "expectedFindings": [
+      {
+        "type": "missing_landmarks",
+        "wcagRule": "1.3.1, 2.4.1",
+        "file": "analytics-report.html",
+        "line": 10,
+        "expectedFix": "Whole page is bare divs — no main/header/nav landmark."
+      },
+      {
+        "type": "low_color_contrast",
+        "wcagRule": "1.4.3",
+        "file": "analytics-report.html",
+        "line": 14,
+        "expectedFix": "Delta text #9e9e9e on white (2.68:1) fails AA — external CSS."
+      },
+      {
+        "type": "low_color_contrast",
+        "wcagRule": "1.4.3",
+        "file": "analytics-report.html",
+        "line": 15,
+        "expectedFix": "Footnote #a0a0a0 on white (2.61:1) fails AA — external CSS."
+      }
+    ]
+  },
+  {
+    "id": "live-checkout-summary",
+    "file": "checkout-summary.html",
+    "auditMode": "html-live",
+    "renderDependent": true,
+    "expectedFindings": [
+      {
+        "type": "icon_button_accessible_names",
+        "wcagRule": "4.1.2",
+        "file": "checkout-summary.html",
+        "line": 15,
+        "expectedFix": "Remove-item (×) icon button has no accessible name."
+      },
+      {
+        "type": "missing_form_labels",
+        "wcagRule": "1.3.1, 4.1.2",
+        "file": "checkout-summary.html",
+        "line": 19,
+        "expectedFix": "Discount-code input has placeholder only, no label."
+      },
+      {
+        "type": "low_color_contrast",
+        "wcagRule": "1.4.3",
+        "file": "checkout-summary.html",
+        "line": 22,
+        "expectedFix": "Fine print #9a9a9a on white (2.81:1) fails AA — external CSS."
+      }
+    ]
+  }
+]
