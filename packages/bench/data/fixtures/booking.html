@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Find flights — SkyHop</title>
+    <style>
+      body { font-family: system-ui, sans-serif; margin: 0; color: #111111; background: #ffffff; }
+      header { background: #06283d; color: #ffffff; padding: 14px 22px; display: flex; align-items: center; gap: 10px; }
+      header img { height: 24px; }
+      main { max-width: 860px; margin: 0 auto; padding: 24px; }
+      .row { display: flex; gap: 14px; flex-wrap: wrap; align-items: end; }
+      .field { display: flex; flex-direction: column; }
+      .field label { font-weight: 600; font-size: 0.9rem; margin-bottom: 4px; }
+      .field input { padding: 9px 12px; border: 1px solid #a7afbb; border-radius: 8px; font-size: 1rem; }
+      .swap { background: #e6eef5; border: none; border-radius: 50%; width: 40px; height: 40px; cursor: pointer; }
+      .swap svg { width: 18px; height: 18px; fill: #06283d; display: block; margin: 0 auto; }
+      .promo input { padding: 9px 12px; border: 1px solid #a7afbb; border-radius: 8px; font-size: 1rem; }
+      .search-btn { background: #0a6cf0; color: #ffffff; border: none; border-radius: 8px; padding: 12px 22px; font-size: 1rem; cursor: pointer; }
+      /* Real low-contrast: #9a9a9a on white = 2.81:1, fails AA. */
+      .pricenote { color: #9a9a9a; font-size: 0.8rem; }
+      /* Decoy: #767676 on white = 4.54:1, PASSES AA. */
+      .reassure { color: #767676; font-size: 0.85rem; }
+    </style>
+  </head>
+  <body>
+    <header>
+      <!-- Decoy: brand logo correctly has alt. -->
+      <img src="skyhop-logo.svg" alt="SkyHop" />
+      <strong>Find your flight</strong>
+    </header>
+    <main>
+      <h1>Search flights</h1>
+      <form>
+        <div class="row">
+          <!-- Decoys: all primary fields are properly labelled. -->
+          <div class="field">
+            <label for="from">From</label>
+            <input id="from" type="text" value="San Francisco (SFO)" />
+          </div>
+          <!-- Real violation: swap button is icon-only with no accessible name. -->
+          <button class="swap" id="swap-btn" type="button">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 7h10l-3-3M16 17H6l3 3" fill="none" stroke="#06283d" stroke-width="2" /></svg>
+          </button>
+          <div class="field">
+            <label for="to">To</label>
+            <input id="to" type="text" value="Tokyo (HND)" />
+          </div>
+          <div class="field">
+            <label for="depart">Depart</label>
+            <input id="depart" type="date" />
+          </div>
+          <div class="field">
+            <label for="travelers">Travelers</label>
+            <input id="travelers" type="number" value="1" min="1" />
+          </div>
+        </div>
+        <p class="reassure">Free cancellation within 24 hours of booking.</p>
+        <div class="promo" style="margin-top:14px;">
+          <!-- Real violation: promo input has placeholder but no label. -->
+          <input id="promo" type="text" placeholder="Promo code" />
+          <button class="search-btn" type="submit">Search flights</button>
+        </div>
+        <!-- Real violation: low-contrast fine print. -->
+        <p class="pricenote" id="price-note">All prices shown in USD and include taxes and fees.</p>
+      </form>
+    </main>
+  </body>
+</html>
