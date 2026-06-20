@@ -1,5 +1,6 @@
 import { Activity, GitPullRequest } from "lucide-react";
 import type { Finding, Severity } from "@ramp/shared";
+import { BackendNotice } from "../components/BackendNotice.js";
 import { Badge } from "../components/ui/badge.js";
 import {
   Card,
@@ -72,7 +73,8 @@ function FindingCard({ finding }: { finding: Finding }) {
 }
 
 export function LiveRunPage() {
-  const { data, findings, loading, error, usingMock } = useLiveRun();
+  const { data, findings, loading, error } = useLiveRun();
+  const backendOffline = !loading && !data && Boolean(error);
 
   return (
     <div className="space-y-6">
@@ -88,39 +90,50 @@ export function LiveRunPage() {
           <p className="mt-1 text-sm text-[var(--color-muted-foreground)]">
             {loading
               ? "Loading latest harness run…"
-              : `Run ${data?.run.id ?? "demo"} · ${data?.run.status ?? "mock"}${data?.run.benchTaskId ? ` · ${data.run.benchTaskId}` : ""}`}
+              : data
+                ? `Run ${data.run.id} · ${data.run.status}${data.run.benchTaskId ? ` · ${data.run.benchTaskId}` : ""}`
+                : "No live run loaded"}
           </p>
-          {usingMock && (
-            <p className="mt-1 text-xs text-amber-300">
-              Showing mock data — start control-plane and finish scoring to load real runs.
-            </p>
-          )}
-          {error && !usingMock && (
-            <p className="mt-1 text-xs text-red-300">{error}</p>
-          )}
+          {backendOffline && <BackendNotice className="mt-3" />}
         </div>
-        <Badge variant="outline">{findings.length} findings</Badge>
+        {findings.length > 0 && (
+          <Badge variant="outline">{findings.length} findings</Badge>
+        )}
       </div>
 
-      <div className="grid gap-4">
-        {findings.map((finding) => (
-          <FindingCard key={finding.id} finding={finding} />
-        ))}
-      </div>
+      {findings.length > 0 ? (
+        <div className="grid gap-4">
+          {findings.map((finding) => (
+            <FindingCard key={finding.id} finding={finding} />
+          ))}
+        </div>
+      ) : (
+        !loading && (
+          <p className="rounded-lg border border-[var(--color-border)] px-4 py-8 text-center text-sm text-[var(--color-muted-foreground)]">
+            {backendOffline
+              ? "Connect control-plane and run a benchmark harness audit to see live findings here."
+              : "No findings in the latest run yet."}
+          </p>
+        )
+      )}
     </div>
   );
 }
 
 export function LiveRunSummaryStrip() {
-  const { data, usingMock } = useLiveRun();
+  const { data, loading, error } = useLiveRun();
 
   return (
     <div className="flex items-center gap-2 text-sm text-[var(--color-muted-foreground)]">
       <GitPullRequest className="h-4 w-4" />
       <span>
-        {usingMock
-          ? "Mock harness audit"
-          : `Live: ${data?.run.benchTaskId ?? data?.run.id ?? "harness run"}`}
+        {loading
+          ? "Loading live run…"
+          : data
+            ? `Live: ${data.run.benchTaskId ?? data.run.id}`
+            : error
+              ? "Control-plane offline"
+              : "No live run"}
       </span>
     </div>
   );

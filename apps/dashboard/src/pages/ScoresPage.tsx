@@ -10,6 +10,7 @@ import {
   YAxis,
 } from "recharts";
 import { BarChart3, Target } from "lucide-react";
+import { BackendNotice } from "../components/BackendNotice.js";
 import { FixOutcomesSection } from "../components/FixOutcomesSection.js";
 import { Badge } from "../components/ui/badge.js";
 import { Button } from "../components/ui/button.js";
@@ -136,10 +137,11 @@ export function ScoresPage() {
     taskCounts,
     loading,
     error,
-    usingMock,
     data,
   } = useBenchmarkScores();
   const leaderboard = useLeaderboard();
+  const backendOffline = !loading && !data && Boolean(error);
+  const leaderboardOffline = !leaderboard.loading && !leaderboard.data && Boolean(leaderboard.error);
 
   const hasHtmlLive = Boolean(htmlLive?.naked && htmlLive.harness);
   const [view, setView] = useState<ScoreView>("html-live");
@@ -246,14 +248,7 @@ export function ScoresPage() {
             source-code · {taskCounts.all} total
           </p>
         )}
-        {usingMock && (
-          <p className="mb-4 text-xs text-amber-300">
-            Showing mock detection data — start control-plane for live numbers.
-          </p>
-        )}
-        {error && !usingMock && (
-          <p className="mb-4 text-xs text-red-300">{error}</p>
-        )}
+        {backendOffline && <BackendNotice className="mb-4" />}
       </div>
 
       {hasHtmlLive && (
@@ -284,33 +279,43 @@ export function ScoresPage() {
           </CardDescription>
         </CardHeader>
         <CardContent className="h-72">
-          <ResponsiveContainer width="100%" height="100%">
-            <BarChart data={chartData} barGap={8}>
-              <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.08)" />
-              <XAxis dataKey="mode" stroke="#888" />
-              <YAxis domain={[0, 100]} stroke="#888" />
-              <Tooltip
-                contentStyle={{
-                  background: "#18181b",
-                  border: "1px solid #3f3f46",
-                  borderRadius: "8px",
-                }}
-              />
-              <Legend />
-              <Bar dataKey="recall" name="Recall" fill="#4ade80" radius={[4, 4, 0, 0]} />
-              <Bar
-                dataKey="precision"
-                name="Precision"
-                fill="#60a5fa"
-                radius={[4, 4, 0, 0]}
-              />
-            </BarChart>
-          </ResponsiveContainer>
-          {naked && harness && (
-            <p className="mt-3 text-xs text-[var(--color-muted-foreground)]">
-              Harness: {harness.truePositives}/{harness.expected} expected hits ·{" "}
-              {harness.detected} reported
-            </p>
+          {chartData.length > 0 ? (
+            <>
+              <ResponsiveContainer width="100%" height="100%">
+                <BarChart data={chartData} barGap={8}>
+                  <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.08)" />
+                  <XAxis dataKey="mode" stroke="#888" />
+                  <YAxis domain={[0, 100]} stroke="#888" />
+                  <Tooltip
+                    contentStyle={{
+                      background: "#18181b",
+                      border: "1px solid #3f3f46",
+                      borderRadius: "8px",
+                    }}
+                  />
+                  <Legend />
+                  <Bar dataKey="recall" name="Recall" fill="#4ade80" radius={[4, 4, 0, 0]} />
+                  <Bar
+                    dataKey="precision"
+                    name="Precision"
+                    fill="#60a5fa"
+                    radius={[4, 4, 0, 0]}
+                  />
+                </BarChart>
+              </ResponsiveContainer>
+              {naked && harness && (
+                <p className="mt-3 text-xs text-[var(--color-muted-foreground)]">
+                  Harness: {harness.truePositives}/{harness.expected} expected hits ·{" "}
+                  {harness.detected} reported
+                </p>
+              )}
+            </>
+          ) : (
+            <div className="flex h-full items-center justify-center px-4 text-center text-sm text-[var(--color-muted-foreground)]">
+              {loading
+                ? "Loading benchmark results…"
+                : "Connect control-plane to view live 51-task detection metrics."}
+            </div>
           )}
         </CardContent>
       </Card>
@@ -324,37 +329,47 @@ export function ScoresPage() {
           </CardDescription>
         </CardHeader>
         <CardContent className="overflow-x-auto">
-          <table className="w-full min-w-[640px] text-left text-sm">
-            <thead>
-              <tr className="border-b border-[var(--color-border)] text-[var(--color-muted-foreground)]">
-                <th className="pb-3 pr-4 font-medium">Model</th>
-                <th className="pb-3 pr-4 font-medium">Mode</th>
-                <th className="pb-3 pr-4 font-medium">Recall</th>
-                <th className="pb-3 pr-4 font-medium">Precision</th>
-                <th className="pb-3 font-medium">Tasks</th>
-              </tr>
-            </thead>
-            <tbody>
-              {(leaderboard.data ?? []).map((row) => (
-                <tr
-                  key={`${row.model}-${row.mode}`}
-                  className="border-b border-[var(--color-border)]/60 last:border-0"
-                >
-                  <td className="py-3 pr-4">{row.model}</td>
-                  <td className="py-3 pr-4">
-                    <Badge variant={row.mode === "harness" ? "default" : "outline"}>
-                      {row.mode}
-                    </Badge>
-                  </td>
-                  <td className="py-3 pr-4 font-mono">{formatPercent(row.recall)}</td>
-                  <td className="py-3 pr-4 font-mono">
-                    {formatPercent(row.precision)}
-                  </td>
-                  <td className="py-3 font-mono">{row.tasks}</td>
+          {leaderboard.data && leaderboard.data.length > 0 ? (
+            <table className="w-full min-w-[640px] text-left text-sm">
+              <thead>
+                <tr className="border-b border-[var(--color-border)] text-[var(--color-muted-foreground)]">
+                  <th className="pb-3 pr-4 font-medium">Model</th>
+                  <th className="pb-3 pr-4 font-medium">Mode</th>
+                  <th className="pb-3 pr-4 font-medium">Recall</th>
+                  <th className="pb-3 pr-4 font-medium">Precision</th>
+                  <th className="pb-3 font-medium">Tasks</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody>
+                {leaderboard.data.map((row) => (
+                  <tr
+                    key={`${row.model}-${row.mode}`}
+                    className="border-b border-[var(--color-border)]/60 last:border-0"
+                  >
+                    <td className="py-3 pr-4">{row.model}</td>
+                    <td className="py-3 pr-4">
+                      <Badge variant={row.mode === "harness" ? "default" : "outline"}>
+                        {row.mode}
+                      </Badge>
+                    </td>
+                    <td className="py-3 pr-4 font-mono">{formatPercent(row.recall)}</td>
+                    <td className="py-3 pr-4 font-mono">
+                      {formatPercent(row.precision)}
+                    </td>
+                    <td className="py-3 font-mono">{row.tasks}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          ) : (
+            <p className="py-8 text-center text-sm text-[var(--color-muted-foreground)]">
+              {leaderboard.loading
+                ? "Loading leaderboard…"
+                : leaderboardOffline
+                  ? "Connect control-plane to view the live model leaderboard."
+                  : "No leaderboard rows yet."}
+            </p>
+          )}
         </CardContent>
       </Card>
     </div>

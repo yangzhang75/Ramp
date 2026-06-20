@@ -10,25 +10,16 @@ import {
   type LiveRunResponse,
   type PrCardResponse,
 } from "../lib/api.js";
-import {
-  mockAfterScore,
-  mockBeforeScore,
-  mockFindings,
-  mockLeaderboard,
-  mockModeMetrics,
-  mockPullRequest,
-} from "../mock-data.js";
 import type { Finding } from "@ramp/shared";
 
 interface AsyncState<T> {
   data: T | null;
   loading: boolean;
   error: string | null;
-  usingMock: boolean;
 }
 
 function initialState<T>(): AsyncState<T> {
-  return { data: null, loading: true, error: null, usingMock: false };
+  return { data: null, loading: true, error: null };
 }
 
 export function useLiveRun(): AsyncState<LiveRunResponse> & { findings: Finding[] } {
@@ -39,7 +30,7 @@ export function useLiveRun(): AsyncState<LiveRunResponse> & { findings: Finding[
     fetchLiveRun()
       .then((data) => {
         if (!cancelled) {
-          setState({ data, loading: false, error: null, usingMock: false });
+          setState({ data, loading: false, error: null });
         }
       })
       .catch((error: unknown) => {
@@ -48,7 +39,6 @@ export function useLiveRun(): AsyncState<LiveRunResponse> & { findings: Finding[
             data: null,
             loading: false,
             error: error instanceof Error ? error.message : "Failed to load run",
-            usingMock: true,
           });
         }
       });
@@ -57,14 +47,10 @@ export function useLiveRun(): AsyncState<LiveRunResponse> & { findings: Finding[
     };
   }, []);
 
-  const findings =
-    state.data?.findings ??
-    mockFindings.map((finding) => ({
-      ...finding,
-      runId: state.data?.run.id ?? finding.runId,
-    }));
-
-  return { ...state, findings };
+  return {
+    ...state,
+    findings: state.data?.findings ?? [],
+  };
 }
 
 export function useBenchmarkScores(): AsyncState<BenchmarkScoresResponse> & {
@@ -81,7 +67,7 @@ export function useBenchmarkScores(): AsyncState<BenchmarkScoresResponse> & {
     fetchBenchmarkScores()
       .then((data) => {
         if (!cancelled) {
-          setState({ data, loading: false, error: null, usingMock: false });
+          setState({ data, loading: false, error: null });
         }
       })
       .catch((error: unknown) => {
@@ -90,7 +76,6 @@ export function useBenchmarkScores(): AsyncState<BenchmarkScoresResponse> & {
             data: null,
             loading: false,
             error: error instanceof Error ? error.message : "Failed to load scores",
-            usingMock: true,
           });
         }
       });
@@ -115,11 +100,7 @@ export function useBenchmarkScores(): AsyncState<BenchmarkScoresResponse> & {
             precision: Math.round(harness.precision * 100),
           },
         ]
-      : mockModeMetrics.map((row) => ({
-          mode: row.mode,
-          recall: Math.round(row.recall * 100),
-          precision: Math.round(row.precision * 100),
-        }));
+      : [];
 
   return {
     ...state,
@@ -139,16 +120,15 @@ export function useLeaderboard(): AsyncState<BenchmarkLeaderboardRow[]> {
     fetchBenchmarkLeaderboard()
       .then(({ rows }) => {
         if (!cancelled) {
-          setState({ data: rows, loading: false, error: null, usingMock: false });
+          setState({ data: rows, loading: false, error: null });
         }
       })
       .catch((error: unknown) => {
         if (!cancelled) {
           setState({
-            data: mockLeaderboard,
+            data: null,
             loading: false,
             error: error instanceof Error ? error.message : "Failed to load leaderboard",
-            usingMock: true,
           });
         }
       });
@@ -160,12 +140,7 @@ export function useLeaderboard(): AsyncState<BenchmarkLeaderboardRow[]> {
   return state;
 }
 
-export function usePrCard(): AsyncState<PrCardResponse> & {
-  beforeScore: number;
-  afterScore: number;
-  beforeViolations: number;
-  afterViolations: number;
-} {
+export function usePrCard(): AsyncState<PrCardResponse> {
   const [state, setState] = useState(initialState<PrCardResponse>());
 
   useEffect(() => {
@@ -173,7 +148,7 @@ export function usePrCard(): AsyncState<PrCardResponse> & {
     fetchPrCard("ramp-003")
       .then((data) => {
         if (!cancelled) {
-          setState({ data, loading: false, error: null, usingMock: false });
+          setState({ data, loading: false, error: null });
         }
       })
       .catch((error: unknown) => {
@@ -182,7 +157,6 @@ export function usePrCard(): AsyncState<PrCardResponse> & {
             data: null,
             loading: false,
             error: error instanceof Error ? error.message : "Failed to load PR card",
-            usingMock: true,
           });
         }
       });
@@ -191,13 +165,5 @@ export function usePrCard(): AsyncState<PrCardResponse> & {
     };
   }, []);
 
-  return {
-    ...state,
-    beforeScore: state.data?.beforeScore ?? mockBeforeScore.score,
-    afterScore: state.data?.afterScore ?? mockAfterScore.score,
-    beforeViolations: state.data?.beforeViolations ?? mockBeforeScore.totalViolations,
-    afterViolations: state.data?.afterViolations ?? mockAfterScore.totalViolations,
-  };
+  return state;
 }
-
-export const mockPrFallback = mockPullRequest;
