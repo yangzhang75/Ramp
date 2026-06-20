@@ -1,0 +1,23 @@
+{
+  "id": "ramp-046",
+  "repoUrl": "https://github.com/Sclxpert/restaurant-website",
+  "framework": "unknown",
+  "auditMode": "html-live",
+  "expectedFindings": [
+    {
+      "type": "missing_alt_text",
+      "wcagRule": "1.1.1",
+      "file": "index.html",
+      "line": 612,
+      "expectedFix": "Replace the inline SVG logo, which exposes no accessible name, with an <img> carrying descriptive alt text."
+    }
+  ],
+  "createdAt": "2026-06-20T06:02:29.092Z",
+  "baseCommit": "99e7f6b087b19c7693d5ce8dbede239635cce858",
+  "fixCommit": "a39494e130a19799755fededeba3401164e33df4",
+  "sourcePr": {
+    "repo": "Sclxpert/restaurant-website",
+    "pr_number": 53,
+    "title": "Fix the Glovo app logo distortion issue"
+  }
+}

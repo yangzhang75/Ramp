@@ -26,8 +26,45 @@ const SEARCH_QUERIES = [
   "contrast is:pr is:merged",
 ];
 
+/**
+ * HTML-focused queries. The `language:HTML` qualifier biases toward repos whose
+ * dominant language is HTML (static sites / landing pages), which is where the
+ * a11y fix tends to land directly in a Playwright-openable .html page rather
+ * than in .tsx/.vue/.css source that the live-page harness can't audit.
+ */
+const HTML_SEARCH_QUERIES = [
+  "accessibility is:pr is:merged language:HTML",
+  "a11y is:pr is:merged language:HTML",
+  "aria-label is:pr is:merged language:HTML",
+  '"alt text" is:pr is:merged language:HTML',
+  "alt is:pr is:merged language:HTML",
+  "wcag is:pr is:merged language:HTML",
+  '"role=" is:pr is:merged language:HTML',
+  "contrast is:pr is:merged language:HTML",
+  "aria is:pr is:merged language:HTML",
+  "screen reader is:pr is:merged language:HTML",
+];
+
+/**
+ * When MINE_MODE=html, only PRs whose accessibility change lands in a
+ * standalone .html page are kept. Extensions in this set mark a PR as
+ * "source/template code" the live-page harness can't open, so any PR touching
+ * one is rejected even if it also touches .html.
+ */
+const SOURCE_CODE_EXT =
+  /\.(tsx|ts|jsx|js|mjs|cjs|vue|svelte|astro|css|scss|sass|less|styl|dart|py|rb|php|erb|java|kt|go|rs|cs)$/i;
+const HTML_EXT = /\.(html?|htm)$/i;
+
+const MINE_MODE = process.env.MINE_MODE ?? "all";
 const MAX_PER_QUERY = 30;
-const MAX_TOTAL = 150;
+const MAX_TOTAL = Number(process.env.MINE_MAX_TOTAL ?? 150);
+/** How many result pages to walk per query (GitHub search caps at ~10). */
+const MINE_PAGES = Number(process.env.MINE_PAGES ?? 1);
+const MINE_SORT = (process.env.MINE_SORT ?? "updated") as
+  | "updated"
+  | "created"
+  | "comments";
+const MINE_ORDER = (process.env.MINE_ORDER ?? "desc") as "asc" | "desc";
 
 export interface CandidateRow {
   repo: string;
@@ -96,6 +133,25 @@ function loadSeeds(): Array<{ repo: string; pr_number: number }> {
   });
 }
 
+/** Extracts the post-image (b/) paths of every file touched by a unified diff. */
+function changedFiles(diff: string): string[] {
+  return [...diff.matchAll(/^diff --git a\/\S+ b\/(\S+)/gm)].map((m) => m[1]!);
+}
+
+/**
+ * True when the PR's change is confined to standalone .html page(s): at least
+ * one .html file is touched and no source/template code file is touched.
+ * Non-page companions (markdown, json, images, txt) are tolerated since the
+ * a11y finding will be annotated against the .html page, not those files.
+ */
+function isPureHtmlDiff(diff: string): boolean {
+  const files = changedFiles(diff);
+  if (files.length === 0) return false;
+  if (!files.some((f) => HTML_EXT.test(f))) return false;
+  if (files.some((f) => SOURCE_CODE_EXT.test(f))) return false;
+  return true;
+}
+
 async function fetchCandidate(
   octokit: Octokit,
   repo: string,
@@ -153,32 +209,40 @@ async function searchCandidates(
   const seen = new Set<string>();
   const results: Array<{ repo: string; pr_number: number }> = [];
 
-  for (const query of SEARCH_QUERIES) {
+  const queries = MINE_MODE === "html" ? HTML_SEARCH_QUERIES : SEARCH_QUERIES;
+  for (const query of queries) {
     if (results.length >= MAX_TOTAL) break;
 
-    console.log(`[mine] searching: ${query}`);
-    const response = await withRetry(
-      () =>
-        octokit.rest.search.issuesAndPullRequests({
-          q: query,
-          sort: "updated",
-          order: "desc",
-          per_page: MAX_PER_QUERY,
-        }),
-      `search "${query}"`,
-    );
+    for (let page = 1; page <= MINE_PAGES; page++) {
+      if (results.length >= MAX_TOTAL) break;
 
-    for (const item of response.data.items) {
-      if (!item.pull_request || results.length >= MAX_TOTAL) continue;
-      const repo = parseRepoFromUrl(item.repository_url);
-      if (!repo) continue;
-      const key = `${repo}#${item.number}`;
-      if (seen.has(key)) continue;
-      seen.add(key);
-      results.push({ repo, pr_number: item.number });
+      console.log(`[mine] searching: ${query} (page ${page}/${MINE_PAGES})`);
+      const response = await withRetry(
+        () =>
+          octokit.rest.search.issuesAndPullRequests({
+            q: query,
+            sort: MINE_SORT,
+            order: MINE_ORDER,
+            per_page: MAX_PER_QUERY,
+            page,
+          }),
+        `search "${query}" p${page}`,
+      );
+
+      if (response.data.items.length === 0) break;
+
+      for (const item of response.data.items) {
+        if (!item.pull_request || results.length >= MAX_TOTAL) continue;
+        const repo = parseRepoFromUrl(item.repository_url);
+        if (!repo) continue;
+        const key = `${repo}#${item.number}`;
+        if (seen.has(key)) continue;
+        seen.add(key);
+        results.push({ repo, pr_number: item.number });
+      }
+
+      await sleep(1_500);
     }
-
-    await sleep(1_500);
   }
 
   return results;
@@ -196,6 +260,10 @@ export async function mineCandidates(): Promise<{
 }> {
   mkdirSync(DATA_DIR, { recursive: true });
   const octokit = getClient();
+
+  console.log(
+    `[mine] mode=${MINE_MODE}${MINE_MODE === "html" ? " (pure-HTML PRs only)" : ""}`,
+  );
 
   const seeds = loadSeeds();
   const searchHits = await searchCandidates(octokit);
@@ -227,6 +295,10 @@ export async function mineCandidates(): Promise<{
     try {
       const candidate = await fetchCandidate(octokit, item.repo, item.pr_number);
       if (!candidate) {
+        skipped++;
+        continue;
+      }
+      if (MINE_MODE === "html" && !isPureHtmlDiff(candidate.diff)) {
         skipped++;
         continue;
       }

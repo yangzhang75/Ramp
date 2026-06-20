@@ -61,4 +61,5 @@ export function gradeDetection(
 }
 
 export { curateTasks, type BenchTaskRecord } from "./curate.js";
+export { curateHtmlTasks } from "./curate-html.js";
 export { mineCandidates, type CandidateRow } from "./mine.js";

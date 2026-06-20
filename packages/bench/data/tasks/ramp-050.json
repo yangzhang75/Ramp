@@ -1,0 +1,23 @@
+{
+  "id": "ramp-050",
+  "repoUrl": "https://github.com/anngeldb-del/HDcredit1.2",
+  "framework": "javascript",
+  "auditMode": "html-live",
+  "expectedFindings": [
+    {
+      "type": "icon_button_accessible_names",
+      "wcagRule": "4.1.2",
+      "file": "index.html",
+      "line": 595,
+      "expectedFix": "Add aria-label (Cerrar) to the icon-only modal close button whose only content is a FontAwesome <i> glyph."
+    }
+  ],
+  "createdAt": "2026-06-20T06:02:29.092Z",
+  "baseCommit": "9c3fad2982fc88d662f95f6046381ef16191a102",
+  "fixCommit": "5bc35fcd1735a766e85aa43a3c39e953a5c664c6",
+  "sourcePr": {
+    "repo": "anngeldb-del/HDcredit1.2",
+    "pr_number": 4,
+    "title": "production: auditoría completa — 20 correcciones, app lista para producción"
+  }
+}

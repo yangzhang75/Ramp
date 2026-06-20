@@ -1,0 +1,23 @@
+{
+  "id": "ramp-044",
+  "repoUrl": "https://github.com/cryptohus/we-litt",
+  "framework": "javascript",
+  "auditMode": "html-live",
+  "expectedFindings": [
+    {
+      "type": "icon_button_accessible_names",
+      "wcagRule": "4.1.2",
+      "file": "index.html",
+      "line": 918,
+      "expectedFix": "Add aria-label to the icon-only account button (emoji glyph) so screen readers announce its purpose."
+    }
+  ],
+  "createdAt": "2026-06-20T06:02:29.092Z",
+  "baseCommit": "c1a29209b6b669c1670a47cc0e25b09b86b7578b",
+  "fixCommit": "d6137cf33d1d39d7b34e3a5c97d1f859b5ed4463",
+  "sourcePr": {
+    "repo": "cryptohus/we-litt",
+    "pr_number": 23,
+    "title": "Audit pass: perf (no fake latency), real distances, honesty fixes"
+  }
+}
