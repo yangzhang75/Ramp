@@ -1,0 +1,36 @@
+{
+  "id": "ramp-030",
+  "repoUrl": "https://github.com/simonvelucia-afk/modulimo-home",
+  "framework": "unknown",
+  "expectedFindings": [
+    {
+      "type": "missing_alt_text",
+      "wcagRule": "1.1.1",
+      "file": "index.html",
+      "line": 244,
+      "expectedFix": "Replaced multilingual alt text with appropriate text for images."
+    },
+    {
+      "type": "missing_alt_text",
+      "wcagRule": "1.1.1",
+      "file": "index.html",
+      "line": 257,
+      "expectedFix": "Replaced multilingual alt text with appropriate text for images."
+    },
+    {
+      "type": "missing_alt_text",
+      "wcagRule": "1.1.1",
+      "file": "mobilite/index.html",
+      "line": 280,
+      "expectedFix": "Replaced multilingual alt text with appropriate text for images."
+    }
+  ],
+  "createdAt": "2026-06-19T23:57:40.438Z",
+  "baseCommit": "6f6ae7bb3e08ea9efafc0efc29d267a5117a37c0",
+  "fixCommit": "5416f14356bf553dd57a4313b4de38bb6db66bea",
+  "sourcePr": {
+    "repo": "simonvelucia-afk/modulimo-home",
+    "pr_number": 35,
+    "title": "Fix multilingual alt text in image tags"
+  }
+}
