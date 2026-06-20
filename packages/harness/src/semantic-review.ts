@@ -57,11 +57,19 @@ Judge meaningful:true when the name conveys real purpose/content:
 
 For every candidate return: selector (echo exactly), kind (echo), name (echo),
 meaningful, a short reason, and \`suggestion\` = a CONCRETE literal replacement
-name to use (NOT advice like "add descriptive text"). Infer it from page context
-(headings, nearby text, the link's href). Examples: alt="image" on a logo →
-suggestion "Acme company logo"; link "click here" to /annual-report-2024.pdf →
-"Download the 2024 annual report"; button "button" with a search icon → "Search".
-For meaningful:true items, suggestion may repeat the existing good name.`;
+name to use (NOT advice like "add descriptive text").
+
+Derive it from the element's OWN markup in the \`html\` field — the link's href,
+the element's class names, its SVG/icon, the alt filename, and nearby text:
+- link "click here" href="/pricing" → "View pricing"
+- link "read more" href="/blog/launch-day" → "Read the launch announcement"
+- button "button" class "search-btn" / magnifier icon → "Search"
+- button "button" class "add-to-cart" → "Add to cart"
+- alt="DSC_0042.JPG" in an "Aero Runner" product card → "Aero Runner shoe"
+- alt="image" on a site logo → "Acme company logo"
+Never output generic advice; if context is thin, still commit to the most
+specific plausible name. For meaningful:true items, suggestion may repeat the
+existing good name.`;
 
 const reviewSchema = z.object({
   items: z.array(
@@ -146,8 +154,9 @@ export async function reviewSemanticQuality(target: string): Promise<SemanticIss
     schema: reviewSchema,
     system: RUBRIC,
     prompt:
-      `Judge each candidate. Echo selector/kind/name exactly so results align.\n\n` +
-      `Candidates:\n${JSON.stringify(candidates.map((c) => ({ selector: c.selector, kind: c.kind, name: c.name })), null, 2)}`,
+      `Judge each candidate and derive a concrete replacement from its \`html\`. ` +
+      `Echo selector/kind/name exactly so results align.\n\n` +
+      `Candidates:\n${JSON.stringify(candidates.map((c) => ({ selector: c.selector, kind: c.kind, name: c.name, html: c.domNode })), null, 2)}`,
   });
 
   const bySelector = new Map(candidates.map((c) => [c.selector, c]));

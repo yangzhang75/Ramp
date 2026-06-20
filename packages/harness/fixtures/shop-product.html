@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Aero Runner — Pace Athletics</title>
+    <style>
+      body { font-family: system-ui, sans-serif; margin: 0; color: #1a1a1a; background: #fff; }
+      main { max-width: 880px; margin: 0 auto; padding: 1.5rem 2rem; }
+      .card { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; align-items: start; }
+      .add-to-cart { border: none; background: #b5341f; padding: 10px; border-radius: 6px; }
+      .add-to-cart svg { width: 20px; height: 20px; fill: #fff; display: block; }
+      a { color: #b5341f; }
+      .price { font-size: 1.4rem; font-weight: 700; }
+      .muted { color: #444; }
+    </style>
+  </head>
+  <body>
+    <main>
+      <nav><a href="/">Home</a> / <a href="/shoes">Shoes</a></nav>
+      <article class="card">
+        <!-- garbage alt: camera filename (this is the Aero Runner product photo) -->
+        <img src="https://via.placeholder.com/360x360" alt="DSC_1042.JPG" width="360" height="360" />
+        <div>
+          <h1>Aero Runner</h1>
+          <p class="muted">Lightweight road shoe with a responsive foam midsole.</p>
+          <p class="price">$129</p>
+          <!-- garbage button name: it's add-to-cart (class + cart icon) -->
+          <button class="add-to-cart" aria-label="button">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 18a2 2 0 1 0 0 4 2 2 0 0 0 0-4zM17 18a2 2 0 1 0 0 4 2 2 0 0 0 0-4zM3 3h2l2.4 12h11l2-8H6" /></svg>
+          </button>
+          <!-- vague link to the reviews section -->
+          <p><a href="/products/aero-runner/reviews">click here</a> for 412 customer reviews.</p>
+          <!-- GOOD link text — should be judged meaningful -->
+          <p><a href="/size-guide">View the size guide</a></p>
+        </div>
+      </article>
+    </main>
+  </body>
+</html>
