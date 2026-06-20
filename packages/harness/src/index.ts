@@ -19,3 +19,5 @@ export { serializeForScreenReader } from "./screen-reader.js";
 export { checkContrast, getFocusOrder } from "./inspectors.js";
 export type { ContrastResult, FocusStop } from "./inspectors.js";
 export { launchPage, closePage } from "./browser.js";
+export { axeScan } from "./axe.js";
+export type { AxeViolationSummary } from "./axe.js";
