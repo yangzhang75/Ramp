@@ -12,6 +12,7 @@
  *
  *   pnpm --filter @ramp/control-plane fix:repo
  */
+import "../instrument.js"; // MUST be first — initializes Sentry
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import {

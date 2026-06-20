@@ -30,7 +30,11 @@ export async function launchPage(target: string): Promise<Page> {
   // axe-core/playwright requires a page from an explicit context.
   const context = await browser.newContext();
   const page = await context.newPage();
-  await page.goto(toUrl(target), { waitUntil: "load" });
+  // "domcontentloaded" not "load": we must NOT block on external resources
+  // (e.g. an <img> pointing at a slow/unreachable CDN). The DOM + inline CSS
+  // are all the a11y tools (axe, a11y-tree, contrast) need; waiting for the
+  // load event made page.goto hang 30s when an external image never loaded.
+  await page.goto(toUrl(target), { waitUntil: "domcontentloaded", timeout: 30000 });
   return page;
 }
 

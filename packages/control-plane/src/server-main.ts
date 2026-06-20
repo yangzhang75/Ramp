@@ -12,5 +12,6 @@ const here = dirname(fileURLToPath(import.meta.url));
 const envPath = resolve(here, "../../../.env");
 if (existsSync(envPath)) process.loadEnvFile(envPath);
 
+await import("./instrument.js"); // init Sentry after env is loaded
 const { startServer } = await import("./server.js");
 startServer();
