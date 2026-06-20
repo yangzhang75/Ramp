@@ -19,8 +19,8 @@ interface FixDemo {
   prUrl?: string;
   beforeScore: number | null;
   afterScore: number | null;
-  beforeAxeViolations: number;
-  afterAxeViolations: number;
+  beforeAxeViolations: number | null;
+  afterAxeViolations: number | null;
   beforeSemanticIssues?: number;
   afterSemanticIssues?: number;
   screenReaderBefore: string[];
@@ -145,7 +145,9 @@ export function FixOutcomesSection() {
           </div>
         )}
 
-        {!isSemantic && (
+        {!isSemantic &&
+          demo.beforeAxeViolations != null &&
+          demo.afterAxeViolations != null && (
           <div className="flex flex-wrap items-center justify-center gap-6 rounded-lg border border-[var(--color-border)] bg-[var(--color-background)]/30 px-6 py-4">
             <div className="text-center">
               <p className="text-xs uppercase tracking-wide text-[var(--color-muted-foreground)]">
