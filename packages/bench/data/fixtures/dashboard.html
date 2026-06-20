@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Overview — Pulse Analytics</title>
+    <style>
+      body { font-family: system-ui, sans-serif; margin: 0; color: #111111; background: #ffffff; }
+      /* Focus outline stripped globally — no visible keyboard focus indicator. */
+      *:focus { outline: none; }
+      .topbar { background: #0f172a; color: #ffffff; padding: 14px 22px; display: flex; justify-content: space-between; align-items: center; }
+      .menu-btn { background: transparent; border: none; cursor: pointer; padding: 6px; }
+      .menu-btn svg { width: 22px; height: 22px; stroke: #ffffff; stroke-width: 2; fill: none; display: block; }
+      .content { max-width: 820px; margin: 0 auto; padding: 24px; }
+      .action { background: #0ea5e9; color: #ffffff; border: none; border-radius: 8px; padding: 10px 16px; font-size: 1rem; cursor: pointer; }
+      a { color: #0369a1; }
+    </style>
+  </head>
+  <body>
+    <div class="topbar">
+      <strong>Pulse Analytics</strong>
+      <button class="menu-btn" id="menu-btn">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 6h18M3 12h18M3 18h18" /></svg>
+      </button>
+    </div>
+    <div class="content">
+      <h1>Overview</h1>
+      <p>Your team shipped 42 releases this quarter, up 12% from last quarter.</p>
+      <p><a href="#reports">View detailed reports</a></p>
+      <button class="action">Export CSV</button>
+    </div>
+  </body>
+</html>

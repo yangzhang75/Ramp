@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Team settings — Cohort</title>
+    <style>
+      body { font-family: system-ui, sans-serif; margin: 0; color: #111111; background: #ffffff; }
+      header { background: #15202b; color: #ffffff; padding: 14px 22px; }
+      main { max-width: 760px; margin: 0 auto; padding: 24px; }
+      .field { margin: 14px 0; }
+      .field label { display: block; font-weight: 600; margin-bottom: 4px; }
+      .field input { padding: 9px 12px; border: 1px solid #a7afbb; border-radius: 8px; font-size: 1rem; width: 280px; }
+      .editbtn { background: #eef1f6; border: none; border-radius: 8px; padding: 7px; cursor: pointer; vertical-align: middle; }
+      .editbtn svg { width: 16px; height: 16px; fill: #15202b; display: block; }
+      .switch { background: #2563eb; border: none; border-radius: 999px; width: 44px; height: 24px; cursor: pointer; }
+      .member { display: flex; align-items: center; gap: 10px; margin: 10px 0; }
+      .member img { width: 36px; height: 36px; border-radius: 50%; }
+      .save { background: #2563eb; color: #ffffff; border: none; border-radius: 8px; padding: 10px 18px; font-size: 1rem; cursor: pointer; }
+      /* Real low-contrast: #a8a8a8 on white = 2.38:1, fails AA. */
+      .updated { color: #a8a8a8; font-size: 0.8rem; }
+      /* Decoy: #6b6b6b on white = 5.33:1, PASSES AA. */
+      .help { color: #6b6b6b; font-size: 0.85rem; }
+    </style>
+  </head>
+  <body>
+    <header><strong>Cohort — Team settings</strong></header>
+    <main>
+      <h1>Team settings</h1>
+
+      <h2>Profile</h2>
+      <div class="field">
+        <!-- Real violation: display name input has no associated label. -->
+        <input id="display-name" type="text" value="Growth Team" />
+        <!-- Real violation: edit icon button has no accessible name. -->
+        <button class="editbtn" id="edit-name">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20h4L18 10l-4-4L4 16z" /></svg>
+        </button>
+      </div>
+      <!-- Real violation: low-contrast timestamp. -->
+      <p class="updated" id="last-updated">Last updated 2 hours ago</p>
+
+      <h2>Notifications</h2>
+      <div class="field">
+        <!-- Decoy: properly labelled text input. -->
+        <label for="reply-to">Reply-to address</label>
+        <input id="reply-to" type="email" value="team@cohort.io" />
+      </div>
+      <!-- Decoy: toggle button HAS a name. -->
+      <button class="switch" id="weekly-digest" role="switch" aria-checked="true" aria-label="Weekly digest email"></button>
+      <p class="help">We only email you about activity in your workspace.</p>
+
+      <h2>Members</h2>
+      <div class="member">
+        <!-- Real violation: member avatar has no alt. -->
+        <img id="member-avatar" src="people/rk.jpg" />
+        <span>Riley Kim — Owner</span>
+      </div>
+      <div class="member">
+        <!-- Decoy: avatar correctly has alt. -->
+        <img src="people/jp.jpg" alt="Jordan Park" />
+        <span>Jordan Park — Member</span>
+      </div>
+
+      <p><button class="save">Save changes</button></p>
+    </main>
+  </body>
+</html>
