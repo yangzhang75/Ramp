@@ -1,0 +1,33 @@
+{
+  "id": "ramp-006",
+  "repoUrl": "https://github.com/rossv/portfolio",
+  "framework": "react",
+  "expectedFindings": [
+    {
+      "type": "icon_button_accessible_names",
+      "wcagRule": "1.1.1",
+      "file": "src/components/LicenseBadge.jsx",
+      "expectedFix": "Added aria-label to LicenseBadge for better screen reader support."
+    },
+    {
+      "type": "icon_button_accessible_names",
+      "wcagRule": "1.1.1",
+      "file": "src/components/ExperienceMap.jsx",
+      "expectedFix": "Added aria-label to project cluster leaves for better screen reader support."
+    },
+    {
+      "type": "missing_focus_indicator",
+      "wcagRule": "2.4.7",
+      "file": "src/styles/global.css",
+      "expectedFix": "Added visible keyboard focus indicator for all interactive elements."
+    }
+  ],
+  "createdAt": "2026-06-19T09:17:48.594Z",
+  "baseCommit": "808d14d54162803cffac69ec3c405681fe90d360",
+  "fixCommit": "7137df69f5a919f030ac363d6d4825961bc10b5f",
+  "sourcePr": {
+    "repo": "rossv/portfolio",
+    "pr_number": 163,
+    "title": "Improve accessibility: focus, reduced-motion, keyboard, landmarks"
+  }
+}

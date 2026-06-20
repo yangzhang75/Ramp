@@ -1,0 +1,22 @@
+{
+  "id": "ramp-024",
+  "repoUrl": "https://github.com/bookwyrm-social/bookwyrm",
+  "framework": "unknown",
+  "expectedFindings": [
+    {
+      "type": "missing_form_labels",
+      "wcagRule": "4.1.2",
+      "file": "bookwyrm/templates/search/layout.html",
+      "line": 18,
+      "expectedFix": "Add aria-label to the select element for accessibility."
+    }
+  ],
+  "createdAt": "2026-06-19T23:57:24.491Z",
+  "baseCommit": "b44a79ad557e2f936f91622a0ec4e31750615f68",
+  "fixCommit": "f061b6be6fb8d0fb3dcb23b29f47737b370f4f6b",
+  "sourcePr": {
+    "repo": "bookwyrm-social/bookwyrm",
+    "pr_number": 3975,
+    "title": "a11y: Fix misplaced ARIA label"
+  }
+}
