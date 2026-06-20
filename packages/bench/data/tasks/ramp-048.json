@@ -1,0 +1,23 @@
+{
+  "id": "ramp-048",
+  "repoUrl": "https://github.com/flyingtigerstrat-coder/Whatifarcade",
+  "framework": "javascript",
+  "auditMode": "html-live",
+  "expectedFindings": [
+    {
+      "type": "low_color_contrast",
+      "wcagRule": "1.4.3",
+      "file": "index.html",
+      "line": 186,
+      "expectedFix": "Raise the CREDITS label colour from --muted to --dust so it meets the minimum contrast ratio."
+    }
+  ],
+  "createdAt": "2026-06-20T06:02:29.092Z",
+  "baseCommit": "8aef355b0d473e9fba32b1f6114a4899345b9faf",
+  "fixCommit": "4edda21121c688162f57055508bcd5a0231b16f1",
+  "sourcePr": {
+    "repo": "flyingtigerstrat-coder/Whatifarcade",
+    "pr_number": 16,
+    "title": "Arcade: coin counter as cabinet-style CREDITS readout"
+  }
+}

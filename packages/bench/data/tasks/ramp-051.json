@@ -1,0 +1,23 @@
+{
+  "id": "ramp-051",
+  "repoUrl": "https://github.com/shinn716/travel-notes-penghu-2026",
+  "framework": "unknown",
+  "auditMode": "html-live",
+  "expectedFindings": [
+    {
+      "type": "heading_structure",
+      "wcagRule": "1.3.1",
+      "file": "index.html",
+      "line": 504,
+      "expectedFix": "Correct the heading hierarchy (h3->h2, h4->h3) so heading levels are not skipped."
+    }
+  ],
+  "createdAt": "2026-06-20T06:02:29.092Z",
+  "baseCommit": "59de8a7a4c4a61ae2a614d2a41545887dc761ac9",
+  "fixCommit": "657a280d50644d61094fbaf722469a1057bb7a26",
+  "sourcePr": {
+    "repo": "shinn716/travel-notes-penghu-2026",
+    "pr_number": 1,
+    "title": "強化 SEO 與無障礙、新增餐廳推薦"
+  }
+}

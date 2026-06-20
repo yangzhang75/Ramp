@@ -1,0 +1,23 @@
+{
+  "id": "ramp-047",
+  "repoUrl": "https://github.com/bobrapp/aigov-ops-open-source-vendor-rfi-rapp-johnston-june-2026",
+  "framework": "unknown",
+  "auditMode": "html-live",
+  "expectedFindings": [
+    {
+      "type": "missing_landmarks",
+      "wcagRule": "1.3.1",
+      "file": "index.html",
+      "line": 48,
+      "expectedFix": "Mark the primary content wrapper as a main landmark (role=main / id=main) and add a skip link to it."
+    }
+  ],
+  "createdAt": "2026-06-20T06:02:29.092Z",
+  "baseCommit": "2654ec46fbc5ab3bd3168b1bec4f1af10b3695a0",
+  "fixCommit": "77b34031de447369712a05f626cb7a4ec0501e3a",
+  "sourcePr": {
+    "repo": "bobrapp/aigov-ops-open-source-vendor-rfi-rapp-johnston-june-2026",
+    "pr_number": 12,
+    "title": "Accessibility baseline + advisor decide/flow polish"
+  }
+}

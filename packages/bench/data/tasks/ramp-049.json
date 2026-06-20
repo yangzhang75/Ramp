@@ -1,0 +1,23 @@
+{
+  "id": "ramp-049",
+  "repoUrl": "https://github.com/Hush1e/caelaria",
+  "framework": "javascript",
+  "auditMode": "html-live",
+  "expectedFindings": [
+    {
+      "type": "missing_form_labels",
+      "wcagRule": "4.1.2",
+      "file": "escape-executive-decision-room.html",
+      "line": 21,
+      "expectedFix": "Add an aria-label to the action <select> controls, which had no associated label element."
+    }
+  ],
+  "createdAt": "2026-06-20T06:02:29.092Z",
+  "baseCommit": "99bb8a5f3040f5d7948f6a9ed654046a2f044409",
+  "fixCommit": "0bdb2d396dec2be19a2397fce2ec8ac439e0788d",
+  "sourcePr": {
+    "repo": "Hush1e/caelaria",
+    "pr_number": 5,
+    "title": "Fix accessibility and game-state bugs across escape/lab modules; remove incident-response play link"
+  }
+}
