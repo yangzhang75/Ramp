@@ -1,0 +1,22 @@
+{
+  "name": "ramp",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Ramp — turn accessibility reports into merge-ready pull requests.",
+  "packageManager": "pnpm@11.7.0",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "build": "tsc -b",
+    "typecheck": "tsc -b",
+    "clean": "tsc -b --clean",
+    "dev:dashboard": "pnpm --filter @ramp/dashboard dev",
+    "dev:control-plane": "pnpm --filter @ramp/control-plane serve"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.2",
+    "typescript": "^5.7.2"
+  }
+}
