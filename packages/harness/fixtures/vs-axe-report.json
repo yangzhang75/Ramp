@@ -1,59 +1,164 @@
 {
-  "target": "/Users/yangzhang/.superset/worktrees/Ramp/rounded-sombrero/packages/harness/fixtures/garbage-names.html",
-  "axe": {
-    "count": 0,
-    "violations": []
+  "generatedFor": "ramp dashboard / devpost — axe vs Ramp semantic review",
+  "pages": [
+    {
+      "label": "Acme dashboard (mixed)",
+      "target": "/Users/yangzhang/.superset/worktrees/Ramp/rounded-sombrero/packages/harness/fixtures/garbage-names.html",
+      "axe": {
+        "count": 0,
+        "violations": []
+      },
+      "ramp": {
+        "axeCount": 0,
+        "semanticReviewed": 8,
+        "semanticIssues": [
+          {
+            "selector": "[data-ramp-sem=\"0\"]",
+            "kind": "alt",
+            "name": "image",
+            "meaningful": false,
+            "reason": "Generic alt text that doesn't describe the image.",
+            "suggestion": "Placeholder image",
+            "domNode": "<img src=\"https://via.placeholder.com/200x80\" alt=\"image\" data-ramp-sem=\"0\">"
+          },
+          {
+            "selector": "[data-ramp-sem=\"1\"]",
+            "kind": "alt",
+            "name": "DSC_0042.JPG",
+            "meaningful": false,
+            "reason": "Filename used as alt text does not convey image content.",
+            "suggestion": "Descriptive content related to the image",
+            "domNode": "<img src=\"https://via.placeholder.com/200x80\" alt=\"DSC_0042.JPG\" data-ramp-sem=\"1\">"
+          },
+          {
+            "selector": "[data-ramp-sem=\"3\"]",
+            "kind": "button-name",
+            "name": "button",
+            "meaningful": false,
+            "reason": "Generic button name that doesn't describe its action or purpose.",
+            "suggestion": "Perform action",
+            "domNode": "<button class=\"icon-btn\" aria-label=\"button\" data-ramp-sem=\"3\">\n        <svg viewBox=\"0 0 24 24\" aria-hidden=\"true\"><path d=\"M21 21l-4.35-4.35M11 18a7 7 0 1 1 0-14 7 7 0 0 1 0 14z\"></path></svg>\n     "
+          },
+          {
+            "selector": "[data-ramp-sem=\"5\"]",
+            "kind": "link-text",
+            "name": "click here",
+            "meaningful": false,
+            "reason": "Vague link text that does not indicate the link's destination.",
+            "suggestion": "View the annual report",
+            "domNode": "<a href=\"/annual-report-2024.pdf\" data-ramp-sem=\"5\">click here</a>"
+          },
+          {
+            "selector": "[data-ramp-sem=\"6\"]",
+            "kind": "link-text",
+            "name": "read more",
+            "meaningful": false,
+            "reason": "Vague link text that does not indicate the content of the linked page.",
+            "suggestion": "View pricing details",
+            "domNode": "<a href=\"/pricing\" data-ramp-sem=\"6\">read more</a>"
+          }
+        ]
+      },
+      "headline": "axe: 0 issue(s) / Ramp: 0 axe + 5 semantic issue(s) axe cannot see"
+    },
+    {
+      "label": "Northwind SaaS landing page",
+      "target": "/Users/yangzhang/.superset/worktrees/Ramp/rounded-sombrero/packages/harness/fixtures/saas-landing.html",
+      "axe": {
+        "count": 0,
+        "violations": []
+      },
+      "ramp": {
+        "axeCount": 0,
+        "semanticReviewed": 6,
+        "semanticIssues": [
+          {
+            "selector": "[data-ramp-sem=\"0\"]",
+            "kind": "alt",
+            "name": "image",
+            "meaningful": false,
+            "reason": "The alt text is generic and does not provide meaningful context about the image.",
+            "suggestion": "Placeholder logo image",
+            "domNode": "<img src=\"https://via.placeholder.com/120x32\" alt=\"image\" width=\"120\" height=\"32\" data-ramp-sem=\"0\">"
+          },
+          {
+            "selector": "[data-ramp-sem=\"2\"]",
+            "kind": "button-name",
+            "name": "button",
+            "meaningful": false,
+            "reason": "The button name is generic and does not specify the action or purpose of the button.",
+            "suggestion": "Search",
+            "domNode": "<button class=\"search-btn\" aria-label=\"button\" data-ramp-sem=\"2\">\n        <svg viewBox=\"0 0 24 24\" aria-hidden=\"true\"><path d=\"M21 21l-4.35-4.35M11 18a7 7 0 1 1 0-14 7 7 0 0 1 0 14z\"></path></svg>\n   "
+          },
+          {
+            "selector": "[data-ramp-sem=\"3\"]",
+            "kind": "link-text",
+            "name": "click here",
+            "meaningful": false,
+            "reason": "The link text does not convey where the link leads, making it unhelpful for users.",
+            "suggestion": "View pricing",
+            "domNode": "<a href=\"/pricing\" data-ramp-sem=\"3\">click here</a>"
+          },
+          {
+            "selector": "[data-ramp-sem=\"4\"]",
+            "kind": "link-text",
+            "name": "read more",
+            "meaningful": false,
+            "reason": "The link text does not specify the content of the link, providing no context about where it directs the user.",
+            "suggestion": "Read the launch announcement",
+            "domNode": "<a href=\"/blog/launch-day\" data-ramp-sem=\"4\">read more</a>"
+          }
+        ]
+      },
+      "headline": "axe: 0 issue(s) / Ramp: 0 axe + 4 semantic issue(s) axe cannot see"
+    },
+    {
+      "label": "Pace Athletics product page",
+      "target": "/Users/yangzhang/.superset/worktrees/Ramp/rounded-sombrero/packages/harness/fixtures/shop-product.html",
+      "axe": {
+        "count": 0,
+        "violations": []
+      },
+      "ramp": {
+        "axeCount": 0,
+        "semanticReviewed": 6,
+        "semanticIssues": [
+          {
+            "selector": "[data-ramp-sem=\"0\"]",
+            "kind": "alt",
+            "name": "DSC_1042.JPG",
+            "meaningful": false,
+            "reason": "The alt text is a filename, which does not describe the content of the image.",
+            "suggestion": "Aero Runner shoe",
+            "domNode": "<img src=\"https://via.placeholder.com/360x360\" alt=\"DSC_1042.JPG\" width=\"360\" height=\"360\" data-ramp-sem=\"0\">"
+          },
+          {
+            "selector": "[data-ramp-sem=\"1\"]",
+            "kind": "button-name",
+            "name": "button",
+            "meaningful": false,
+            "reason": "The button name is generic and doesn't convey any specific action.",
+            "suggestion": "Add to cart",
+            "domNode": "<button class=\"add-to-cart\" aria-label=\"button\" data-ramp-sem=\"1\">\n            <svg viewBox=\"0 0 24 24\" aria-hidden=\"true\"><path d=\"M7 18a2 2 0 1 0 0 4 2 2 0 0 0 0-4zM17 18a2 2 0 1 0 0 4 2 2 0 0 0 0-4"
+          },
+          {
+            "selector": "[data-ramp-sem=\"4\"]",
+            "kind": "link-text",
+            "name": "click here",
+            "meaningful": false,
+            "reason": "The link text is generic and does not describe the content it points to.",
+            "suggestion": "Read Aero Runner reviews",
+            "domNode": "<a href=\"/products/aero-runner/reviews\" data-ramp-sem=\"4\">click here</a>"
+          }
+        ]
+      },
+      "headline": "axe: 0 issue(s) / Ramp: 0 axe + 3 semantic issue(s) axe cannot see"
+    }
+  ],
+  "totals": {
+    "pages": 3,
+    "axeIssues": 0,
+    "semanticIssuesAxeMissed": 12
   },
-  "ramp": {
-    "axeCount": 0,
-    "semanticReviewed": 8,
-    "semanticIssues": [
-      {
-        "selector": "[data-ramp-sem=\"0\"]",
-        "kind": "alt",
-        "name": "image",
-        "meaningful": false,
-        "reason": "The alt text is a generic placeholder and does not convey any meaningful information about the image.",
-        "suggestion": "Acme company image",
-        "domNode": "<img src=\"https://via.placeholder.com/200x80\" alt=\"image\" data-ramp-sem=\"0\">"
-      },
-      {
-        "selector": "[data-ramp-sem=\"1\"]",
-        "kind": "alt",
-        "name": "DSC_0042.JPG",
-        "meaningful": false,
-        "reason": "The alt text is a filename, which does not describe the content or purpose of the image.",
-        "suggestion": "Acme company image",
-        "domNode": "<img src=\"https://via.placeholder.com/200x80\" alt=\"DSC_0042.JPG\" data-ramp-sem=\"1\">"
-      },
-      {
-        "selector": "[data-ramp-sem=\"3\"]",
-        "kind": "button-name",
-        "name": "button",
-        "meaningful": false,
-        "reason": "The button name is generic and does not describe its function or action.",
-        "suggestion": "Submit form",
-        "domNode": "<button class=\"icon-btn\" aria-label=\"button\" data-ramp-sem=\"3\">\n        <svg viewBox=\"0 0 24 24\" aria-hidden=\"true\"><path d=\"M21 21l-4.35-4.35M11 18a7 7 0 1 1 0-14 7 7 0 0 1 0 14z\"></path></svg>\n     "
-      },
-      {
-        "selector": "[data-ramp-sem=\"5\"]",
-        "kind": "link-text",
-        "name": "click here",
-        "meaningful": false,
-        "reason": "The link text is vague and does not indicate the destination or purpose of the link.",
-        "suggestion": "Learn more about our services",
-        "domNode": "<a href=\"/annual-report-2024.pdf\" data-ramp-sem=\"5\">click here</a>"
-      },
-      {
-        "selector": "[data-ramp-sem=\"6\"]",
-        "kind": "link-text",
-        "name": "read more",
-        "meaningful": false,
-        "reason": "The link text does not specify what the user will read more about, making it unhelpful.",
-        "suggestion": "Read more about our latest updates",
-        "domNode": "<a href=\"/pricing\" data-ramp-sem=\"6\">read more</a>"
-      }
-    ]
-  },
-  "headline": "axe: 0 issue(s) / Ramp: 0 axe + 5 semantic issue(s) axe cannot see"
+  "headline": "Across 3 pages — axe: 0 issues / Ramp: 12 semantic issues axe passed silently"
 }
