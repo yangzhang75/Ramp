@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Northwind Analytics — ship metrics that matter</title>
+    <style>
+      body { font-family: system-ui, sans-serif; margin: 0; color: #14202b; background: #fff; }
+      header, main, footer { max-width: 920px; margin: 0 auto; padding: 1rem 2rem; }
+      header { display: flex; align-items: center; justify-content: space-between; }
+      .search-btn { border: none; background: #0b4f8a; padding: 8px; border-radius: 6px; }
+      .search-btn svg { width: 18px; height: 18px; fill: #fff; display: block; }
+      .hero h1 { font-size: 2rem; margin: .2rem 0; }
+      .cta { display: inline-block; background: #0b4f8a; color: #fff; padding: 10px 16px; border-radius: 6px; text-decoration: none; }
+      a { color: #0b4f8a; }
+      .muted { color: #33475b; }
+    </style>
+  </head>
+  <body>
+    <header>
+      <!-- garbage alt: placeholder word (this is the company logo) -->
+      <img src="https://via.placeholder.com/120x32" alt="image" width="120" height="32" />
+      <!-- garbage button name: it's a search button (class + icon say so) -->
+      <button class="search-btn" aria-label="button">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21 21l-4.35-4.35M11 18a7 7 0 1 1 0-14 7 7 0 0 1 0 14z" /></svg>
+      </button>
+    </header>
+    <main>
+      <section class="hero">
+        <h1>Ship the metrics that matter</h1>
+        <p class="muted">Northwind Analytics turns raw events into board-ready dashboards in minutes.</p>
+        <!-- vague link to the pricing page -->
+        <p><a href="/pricing">click here</a> to see plans, or
+          <!-- vague link to a specific blog post -->
+          <a href="/blog/launch-day">read more</a> about our launch.</p>
+        <a class="cta" href="/signup">Start free trial</a>
+      </section>
+      <section>
+        <h2>Trusted by data teams</h2>
+        <!-- GOOD alt — should be judged meaningful -->
+        <img src="https://via.placeholder.com/600x120" alt="Logos of Acme, Globex, and Initech" />
+      </section>
+    </main>
+    <footer class="muted">© 2026 Northwind Analytics</footer>
+  </body>
+</html>
