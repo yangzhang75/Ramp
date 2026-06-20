@@ -1,0 +1,32 @@
+{
+  "name": "@ramp/bench",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    }
+  },
+  "scripts": {
+    "build": "tsc -b",
+    "clean": "tsc -b --clean",
+    "mine": "tsx --env-file=../../.env src/mine.ts",
+    "curate": "tsx --env-file=../../.env src/curate.ts",
+    "curate:html": "tsx src/curate-html.ts",
+    "score:fixtures": "tsx src/score-fixtures.ts",
+    "score:html-live": "tsx src/score-html-live.ts"
+  },
+  "dependencies": {
+    "@octokit/rest": "^21.1.1",
+    "@ramp/shared": "workspace:*",
+    "@ramp/scoring": "workspace:*",
+    "@ramp/harness": "workspace:*"
+  },
+  "devDependencies": {
+    "tsx": "^4.22.4"
+  }
+}
