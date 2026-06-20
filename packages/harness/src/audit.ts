@@ -68,6 +68,36 @@ contrast, missing form label); moderate/minor = lesser issues.
 When you have recorded every violation you can confirm, stop. Do not invent
 findings you cannot back with evidence from the tools.`;
 
+/**
+ * Opt-in precision hardening. When HARNESS_VERIFY=1 the model must prove every
+ * finding with the matching tool before submitting, and we drop anything below
+ * the confidence floor. Default off so the teammate's leaderboard/control-plane
+ * behaviour is unchanged unless a caller (e.g. the bench runner) opts in.
+ */
+const VERIFY_MODE =
+  process.env.HARNESS_VERIFY === "1" || process.env.HARNESS_VERIFY === "true";
+const MIN_CONFIDENCE = Number(
+  process.env.HARNESS_MIN_CONFIDENCE ?? (VERIFY_MODE ? 0.8 : 0),
+);
+
+const VERIFY_PROTOCOL = `
+
+VERIFICATION PROTOCOL (mandatory). Before EACH submit_finding you MUST prove it
+with the matching tool and cite the measurement in "evidence". If the tool does
+NOT confirm the violation, do not submit it — retract.
+- low_color_contrast: call check_contrast on the element's selector; submit ONLY
+  if the measured ratio is below 4.5 (3.0 for large text). Put the exact ratio in
+  evidence. Do not judge contrast by eye or from hex codes.
+- icon_button_accessible_names / missing_alt_text / missing_form_labels: call
+  get_accessibility_tree (or query_dom) and confirm the element's accessible name
+  is empty/whitespace; submit ONLY if confirmed empty. A placeholder-only textbox
+  still counts as empty. Quote the tree node in evidence.
+- missing_focus_indicator: call get_focus_order and submit ONLY if a focus stop
+  reports no visible indicator.
+- heading_structure / missing_landmarks: confirm via get_accessibility_tree
+  before submitting.
+Only submit findings you are at least 0.8 confident in.`;
+
 const findingSchema = z.object({
   type: z.enum([
     "missing_alt_text",
@@ -211,9 +241,12 @@ export async function runAudit(input: AuditInput): Promise<Finding[]> {
       model,
       maxOutputTokens: 8000,
       stopWhen: stepCountIs(input.maxSteps ?? 25),
-      system: input.hints
-        ? `${SYSTEM_PROMPT}\n\nAdditional context for this audit:\n${input.hints}`
-        : SYSTEM_PROMPT,
+      system: (() => {
+        const base = VERIFY_MODE ? `${SYSTEM_PROMPT}${VERIFY_PROTOCOL}` : SYSTEM_PROMPT;
+        return input.hints
+          ? `${base}\n\nAdditional context for this audit:\n${input.hints}`
+          : base;
+      })(),
       tools,
       prompt:
         `Audit the page at: ${target}\n\n` +
@@ -226,5 +259,5 @@ export async function runAudit(input: AuditInput): Promise<Finding[]> {
     await closePage(page);
   }
 
-  return findings;
+  return findings.filter((finding) => finding.confidence >= MIN_CONFIDENCE);
 }
