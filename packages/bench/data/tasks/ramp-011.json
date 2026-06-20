@@ -1,0 +1,21 @@
+{
+  "id": "ramp-011",
+  "repoUrl": "https://github.com/adobecom/milo",
+  "framework": "javascript",
+  "expectedFindings": [
+    {
+      "type": "missing_focus_indicator",
+      "wcagRule": "2.4.7",
+      "file": "libs/mep/ace1205/hub-hero/hub-hero.css",
+      "expectedFix": "Added z-index on focused cards to improve visibility"
+    }
+  ],
+  "createdAt": "2026-06-19T09:17:57.050Z",
+  "baseCommit": "9c4dd27de4e1f8c6c540bb4ce609aa27bba57cca",
+  "fixCommit": "29d69518af894beabe8dc92d61b4b1bf926d1f10",
+  "sourcePr": {
+    "repo": "adobecom/milo",
+    "pr_number": 6198,
+    "title": "Add z-index on focused cards in hub hero"
+  }
+}

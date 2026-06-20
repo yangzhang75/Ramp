@@ -1,0 +1,21 @@
+{
+  "id": "ramp-022",
+  "repoUrl": "https://github.com/schintu79/clearux-saas",
+  "framework": "next",
+  "expectedFindings": [
+    {
+      "type": "keyboard_navigation",
+      "wcagRule": "2.1.1",
+      "file": "src/lib/audit-engine/responsive-checker.ts",
+      "expectedFix": "Ensure all interactive elements are keyboard accessible."
+    }
+  ],
+  "createdAt": "2026-06-19T09:20:45.123Z",
+  "baseCommit": "6998ce50f6c85f5956c8e93ef1906c4c9590ed6c",
+  "fixCommit": "8e27d66ca80b9c2ac32e3e81de05f0bd92e1b7ec",
+  "sourcePr": {
+    "repo": "schintu79/clearux-saas",
+    "pr_number": 152,
+    "title": "fix: exclude visually-hidden/skip-link from touch-target check; stop …"
+  }
+}
