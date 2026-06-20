@@ -1,0 +1,35 @@
+{
+  "id": "ramp-008",
+  "repoUrl": "https://github.com/Nitya-003/InnerHue",
+  "framework": "next",
+  "expectedFindings": [
+    {
+      "type": "missing_focus_indicator",
+      "wcagRule": "2.4.7",
+      "file": "app/globals.css",
+      "expectedFix": "Added focus-visible styles for keyboard users"
+    },
+    {
+      "type": "missing_form_labels",
+      "wcagRule": "1.3.1",
+      "file": "components/MoodQuoteCard.tsx",
+      "line": 229,
+      "expectedFix": "Replaced title with aria-label 'New quote'"
+    },
+    {
+      "type": "missing_form_labels",
+      "wcagRule": "1.3.1",
+      "file": "components/QuoteCard.tsx",
+      "line": 35,
+      "expectedFix": "Replaced title with aria-label 'Refresh quote'"
+    }
+  ],
+  "createdAt": "2026-06-19T09:17:52.165Z",
+  "baseCommit": "3f6ae645b64855084c1f7fec408f70bc6ddb1529",
+  "fixCommit": "616c5f050388c28afce4a19017e5fbcaa4be1cc7",
+  "sourcePr": {
+    "repo": "Nitya-003/InnerHue",
+    "pr_number": 282,
+    "title": "Add keyboard accessibility and aria-labels"
+  }
+}

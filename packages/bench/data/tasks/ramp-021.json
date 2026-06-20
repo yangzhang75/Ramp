@@ -1,0 +1,21 @@
+{
+  "id": "ramp-021",
+  "repoUrl": "https://github.com/maonakamoto/revampit",
+  "framework": "next",
+  "expectedFindings": [
+    {
+      "type": "keyboard_navigation",
+      "wcagRule": "2.1.1",
+      "file": "src/hooks/useFocusTrap.ts",
+      "expectedFix": "Implemented focus trapping for keyboard navigation in modal overlays."
+    }
+  ],
+  "createdAt": "2026-06-19T09:20:39.983Z",
+  "baseCommit": "94d184ff2bfeb6395f73482ae2445f4272591883",
+  "fixCommit": "45e13e7814657f80be98d7446cfdd5ee694659a6",
+  "sourcePr": {
+    "repo": "maonakamoto/revampit",
+    "pr_number": 149,
+    "title": "a11y(cart): trap & restore focus in CartDrawer via shared useFocusTrap hook"
+  }
+}
