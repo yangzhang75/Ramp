@@ -1,0 +1,40 @@
+{
+  "tagline": "Ramp doesn't just report — it fixes and opens a real PR.",
+  "demos": [
+    {
+      "id": "bad-html",
+      "repo": "yangzhang75/Ramp",
+      "category": "WCAG · alt, contrast, buttons",
+      "title": "bad.html fixture repair",
+      "prUrl": "https://github.com/yangzhang75/Ramp/pull/7",
+      "beforeScore": 60,
+      "afterScore": 96,
+      "beforeAxeViolations": 5,
+      "afterAxeViolations": 0
+    },
+    {
+      "id": "aigov-ops",
+      "repo": "bobrapp/aigov-ops-open-source-vendor-rfi-rapp-johnston-june-2026",
+      "category": "Landmarks · skip link · main",
+      "title": "Real open-source production fork",
+      "prUrl": "https://github.com/bobrapp/aigov-ops-open-source-vendor-rfi-rapp-johnston-june-2026/pull/12",
+      "beforeScore": 92,
+      "afterScore": 100,
+      "beforeAxeViolations": 2,
+      "afterAxeViolations": 0
+    },
+    {
+      "id": "garbage-names",
+      "repo": "yangzhang75/Ramp",
+      "category": "Semantic names · axe-blind issues",
+      "title": "Meaningless alt / button / link text",
+      "prUrl": "https://github.com/yangzhang75/Ramp/pull/7",
+      "beforeScore": null,
+      "afterScore": null,
+      "beforeAxeViolations": 0,
+      "afterAxeViolations": 0,
+      "beforeSemanticIssues": 5,
+      "afterSemanticIssues": 0
+    }
+  ]
+}

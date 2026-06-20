@@ -1,0 +1,65 @@
+{
+  "demos": [
+    {
+      "id": "bad-html",
+      "label": "WCAG repair",
+      "title": "bad.html — mechanical violations",
+      "repo": "yangzhang75/Ramp",
+      "prUrl": "https://github.com/yangzhang75/Ramp/pull/7",
+      "beforeScore": 60,
+      "afterScore": 96,
+      "beforeAxeViolations": 5,
+      "afterAxeViolations": 0,
+      "screenReaderBefore": ["image", "button", "button"],
+      "screenReaderAfter": [
+        "image: Acme logo",
+        "button: Search",
+        "button: Add"
+      ]
+    },
+    {
+      "id": "aigov-ops",
+      "label": "Real OSS",
+      "title": "aigov-ops — production fork",
+      "repo": "bobrapp/aigov-ops-open-source-vendor-rfi-rapp-johnston-june-2026",
+      "prUrl": "https://github.com/bobrapp/aigov-ops-open-source-vendor-rfi-rapp-johnston-june-2026/pull/12",
+      "beforeScore": 92,
+      "afterScore": 100,
+      "beforeAxeViolations": 2,
+      "afterAxeViolations": 0,
+      "screenReaderBefore": ["banner", "link", "edit text", "button"],
+      "screenReaderAfter": [
+        "banner: Site header",
+        "link: Skip to main content",
+        "main",
+        "button: Submit request"
+      ]
+    },
+    {
+      "id": "garbage-names",
+      "label": "Semantic only",
+      "title": "garbage-names.html — axe passes, Ramp doesn't",
+      "repo": "yangzhang75/Ramp",
+      "beforeScore": null,
+      "afterScore": null,
+      "beforeAxeViolations": 0,
+      "afterAxeViolations": 0,
+      "beforeSemanticIssues": 5,
+      "afterSemanticIssues": 0,
+      "screenReaderBefore": [
+        "image",
+        "image",
+        "button",
+        "link: click here",
+        "link: read more"
+      ],
+      "screenReaderAfter": [
+        "image: Acme company image",
+        "image: Acme company image",
+        "button: Submit form",
+        "link: Learn more about our services",
+        "link: Read more about our latest updates"
+      ]
+    }
+  ]
+}

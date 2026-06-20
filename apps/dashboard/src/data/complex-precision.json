@@ -1,0 +1,25 @@
+{
+  "status": "ready",
+  "runsCompleted": 3,
+  "runsRequired": 3,
+  "label": "10 complex annotated pages",
+  "model": "gpt-4o-mini",
+  "runsPerMode": 3,
+  "methodology": "Single-PR scoring punishes thorough audits — models that find every real issue get penalized for extras outside the diff. We measure precision on fully annotated pages with decoys instead.",
+  "naked": {
+    "recall": 0.84375,
+    "precision": 0.8268069677883446,
+    "truePositives": 27,
+    "detected": 32.666666666666664,
+    "expected": 32
+  },
+  "harness": {
+    "recall": 0.7708333333333334,
+    "precision": 0.831417582543406,
+    "truePositives": 24.666666666666668,
+    "detected": 29.666666666666668,
+    "expected": 32
+  },
+  "computedAt": "2026-06-20T16:00:00.000Z",
+  "source": "packages/bench/data/fixture-precision-runs.json (3-run average, final)"
+}

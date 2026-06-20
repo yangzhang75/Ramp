@@ -1,4 +1,4 @@
-import { ExternalLink, GitPullRequest } from "lucide-react";
+import { ExternalLink, GitPullRequest, Headphones } from "lucide-react";
 import { Badge } from "../components/ui/badge.js";
 import {
   Card,
@@ -8,6 +8,7 @@ import {
   CardTitle,
 } from "../components/ui/card.js";
 import { mockPrFallback, usePrCard } from "../hooks/useRampData.js";
+import fixOutcomes from "../data/fix-outcomes.json";
 
 function DiffLine({ line }: { line: string }) {
   let className = "text-[var(--color-muted-foreground)]";
@@ -40,6 +41,7 @@ export function PRCardPage() {
   };
 
   const diffLines = pr.diff.split("\n");
+  const badHtmlDemo = fixOutcomes.demos.find((d) => d.id === "bad-html");
 
   return (
     <div className="space-y-6">
@@ -98,6 +100,29 @@ export function PRCardPage() {
               </p>
             </div>
           </div>
+
+          {badHtmlDemo && (
+            <div className="grid gap-4 lg:grid-cols-2">
+              <div className="rounded-lg border border-red-500/30 bg-red-950/20 p-4">
+                <p className="mb-2 flex items-center gap-2 text-xs uppercase tracking-wide text-red-300">
+                  <Headphones className="h-3.5 w-3.5" />
+                  Screen reader — before
+                </p>
+                <pre className="font-mono text-sm leading-relaxed">
+                  {badHtmlDemo.screenReaderBefore.join("\n")}
+                </pre>
+              </div>
+              <div className="rounded-lg border border-green-500/30 bg-green-950/20 p-4">
+                <p className="mb-2 flex items-center gap-2 text-xs uppercase tracking-wide text-green-300">
+                  <Headphones className="h-3.5 w-3.5" />
+                  Screen reader — after
+                </p>
+                <pre className="font-mono text-sm leading-relaxed">
+                  {badHtmlDemo.screenReaderAfter.join("\n")}
+                </pre>
+              </div>
+            </div>
+          )}
 
           <div>
             <p className="mb-3 text-sm font-medium">Unified diff</p>

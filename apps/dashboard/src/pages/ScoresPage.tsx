@@ -9,7 +9,8 @@ import {
   XAxis,
   YAxis,
 } from "recharts";
-import { BarChart3, TrendingUp } from "lucide-react";
+import { BarChart3, Target } from "lucide-react";
+import { FixOutcomesSection } from "../components/FixOutcomesSection.js";
 import { Badge } from "../components/ui/badge.js";
 import { Button } from "../components/ui/button.js";
 import {
@@ -21,10 +22,32 @@ import {
 } from "../components/ui/card.js";
 import { useBenchmarkScores, useLeaderboard } from "../hooks/useRampData.js";
 import type { BenchmarkModeMetrics } from "../lib/api.js";
+import complexPrecision from "../data/complex-precision.json";
 import { formatPercent } from "../lib/utils.js";
-import { mockAfterScore, mockBeforeScore } from "../mock-data.js";
 
 type ScoreView = "html-live" | "all";
+
+interface ComplexPrecisionData {
+  status: "pending" | "partial" | "ready";
+  runsCompleted?: number;
+  runsRequired?: number;
+  label: string;
+  model: string;
+  runsPerMode: number;
+  methodology: string;
+  naked: {
+    recall: number | null;
+    precision: number | null;
+  };
+  harness: {
+    recall: number | null;
+    precision: number | null;
+  };
+  computedAt: string | null;
+  source: string;
+}
+
+const precisionData = complexPrecision as ComplexPrecisionData;
 
 function metricsChart(
   naked: BenchmarkModeMetrics | null,
@@ -43,6 +66,65 @@ function metricsChart(
       precision: Math.round(harness.precision * 100),
     },
   ];
+}
+
+function PrecisionHero({
+  nakedPrecision,
+  harnessPrecision,
+  pending,
+  partial,
+  runsCompleted,
+  runsRequired,
+}: {
+  nakedPrecision: number | null;
+  harnessPrecision: number | null;
+  pending: boolean;
+  partial: boolean;
+  runsCompleted?: number;
+  runsRequired?: number;
+}) {
+  if (pending || nakedPrecision == null || harnessPrecision == null) {
+    return (
+      <div className="rounded-lg border border-amber-500/30 bg-amber-950/20 px-6 py-8 text-center">
+        <p className="text-sm text-amber-200">
+          Complex-page precision run pending — update{" "}
+          <span className="font-mono">packages/bench/data/fixture-precision-runs.json</span>{" "}
+          after{" "}
+          <span className="font-mono">pnpm --filter @ramp/bench score:fixtures</span>.
+        </p>
+      </div>
+    );
+  }
+
+  return (
+    <div className="space-y-3">
+      {partial && runsCompleted != null && runsRequired != null && (
+        <p className="text-center text-xs text-amber-300">
+          Interim average from run {runsCompleted} of {runsRequired} — re-run twice more, then
+          update the JSON files
+        </p>
+      )}
+      <div className="flex flex-wrap items-end justify-center gap-4 py-2">
+        <div className="text-center">
+          <p className="text-xs uppercase tracking-wide text-[var(--color-muted-foreground)]">
+            Naked precision
+          </p>
+          <p className="text-5xl font-bold text-red-300">
+            {Math.round(nakedPrecision * 100)}%
+          </p>
+        </div>
+        <p className="pb-3 text-2xl text-[var(--color-muted-foreground)]">→</p>
+        <div className="text-center">
+          <p className="text-xs uppercase tracking-wide text-[var(--color-primary)]">
+            Harness precision
+          </p>
+          <p className="text-5xl font-bold text-[var(--color-primary)]">
+            {Math.round(harnessPrecision * 100)}%
+          </p>
+        </div>
+      </div>
+    </div>
+  );
 }
 
 export function ScoresPage() {
@@ -78,12 +160,8 @@ export function ScoresPage() {
       ? (htmlLive?.taskCount ?? 0)
       : (data?.taskCount ?? 0);
 
-  const beforeScore = harness
-    ? Math.round((1 - harness.detected / Math.max(harness.expected, 1)) * 100)
-    : mockBeforeScore.score;
-  const afterScore = naked
-    ? Math.round(naked.recall * 100)
-    : mockAfterScore.score;
+  const precisionPending = precisionData.status === "pending";
+  const precisionPartial = precisionData.status === "partial";
 
   return (
     <div className="space-y-6">
@@ -94,25 +172,87 @@ export function ScoresPage() {
             Scores
           </span>
         </div>
-        <h2 className="text-2xl font-semibold">Detection benchmark</h2>
+        <h2 className="text-2xl font-semibold">Outcomes & benchmark</h2>
         <p className="mt-1 text-sm text-[var(--color-muted-foreground)]">
+          Fix-loop before/after evidence, then detection metrics on annotated tasks
+        </p>
+      </div>
+
+      <FixOutcomesSection />
+
+      <Card className="border-[var(--color-primary)]/20">
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2 text-base">
+            <Target className="h-4 w-4 text-[var(--color-primary)]" />
+            Precision on {precisionData.label}
+          </CardTitle>
+          <CardDescription>{precisionData.methodology}</CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="flex flex-wrap gap-2">
+            <Badge variant="outline">{precisionData.model}</Badge>
+            {precisionData.runsCompleted != null && precisionData.runsRequired != null ? (
+              <Badge variant={precisionPartial ? "secondary" : "default"}>
+                {precisionData.runsCompleted}/{precisionData.runsRequired} runs
+              </Badge>
+            ) : (
+              <Badge variant="secondary">{precisionData.runsPerMode} runs averaged</Badge>
+            )}
+            {!precisionPending && precisionData.computedAt && (
+              <Badge variant="outline">
+                {new Date(precisionData.computedAt).toLocaleDateString()}
+              </Badge>
+            )}
+          </div>
+          <PrecisionHero
+            nakedPrecision={precisionData.naked.precision}
+            harnessPrecision={precisionData.harness.precision}
+            pending={precisionPending}
+            partial={precisionPartial}
+            runsCompleted={precisionData.runsCompleted}
+            runsRequired={precisionData.runsRequired}
+          />
+          {!precisionPending && (
+            <div className="grid gap-4 md:grid-cols-2">
+              <div className="rounded-lg border border-[var(--color-border)] p-4 text-sm">
+                <p className="font-medium">Naked</p>
+                <p className="mt-1 text-[var(--color-muted-foreground)]">
+                  Recall {formatPercent(precisionData.naked.recall ?? 0)} · Precision{" "}
+                  {formatPercent(precisionData.naked.precision ?? 0)}
+                </p>
+              </div>
+              <div className="rounded-lg border border-[var(--color-primary)]/30 p-4 text-sm">
+                <p className="font-medium">Harness</p>
+                <p className="mt-1 text-[var(--color-muted-foreground)]">
+                  Recall {formatPercent(precisionData.harness.recall ?? 0)} · Precision{" "}
+                  {formatPercent(precisionData.harness.precision ?? 0)}
+                </p>
+              </div>
+            </div>
+          )}
+        </CardContent>
+      </Card>
+
+      <div>
+        <h3 className="mb-1 text-lg font-medium">51-task detection benchmark</h3>
+        <p className="mb-4 text-sm text-[var(--color-muted-foreground)]">
           {loading
             ? "Loading benchmark results…"
-            : `${activeView === "html-live" ? "HTML-live (fair comparison)" : "All tasks"} · ${leaderboard.data?.length ? `${leaderboard.data.length / 2} model(s)` : "latest run"} · ${activeTaskCount} tasks`}
+            : `${activeView === "html-live" ? "HTML-live subset" : "All tasks"} · ${leaderboard.data?.length ? `${leaderboard.data.length / 2} model(s)` : "latest run"} · ${activeTaskCount} tasks scored`}
         </p>
         {taskCounts && (
-          <p className="mt-1 text-xs text-[var(--color-muted-foreground)]">
+          <p className="mb-4 text-xs text-[var(--color-muted-foreground)]">
             Bench mix: {taskCounts.htmlLive} html-live · {taskCounts.sourceCode}{" "}
             source-code · {taskCounts.all} total
           </p>
         )}
         {usingMock && (
-          <p className="mt-1 text-xs text-amber-300">
-            Showing mock data — run scoring and start control-plane for live numbers.
+          <p className="mb-4 text-xs text-amber-300">
+            Showing mock detection data — start control-plane for live numbers.
           </p>
         )}
         {error && !usingMock && (
-          <p className="mt-1 text-xs text-red-300">{error}</p>
+          <p className="mb-4 text-xs text-red-300">{error}</p>
         )}
       </div>
 
@@ -135,76 +275,52 @@ export function ScoresPage() {
         </div>
       )}
 
-      <div className="grid gap-4 md:grid-cols-3">
-        <Card className="md:col-span-1">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2 text-base">
-              <TrendingUp className="h-4 w-4 text-[var(--color-primary)]" />
-              Detection recall
-            </CardTitle>
-            <CardDescription>
-              {activeView === "html-live"
-                ? "Harness vs naked on rendered HTML tasks"
-                : "Harness vs naked recall"}
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="flex items-end gap-3">
-              <span className="text-5xl font-bold text-red-300">
-                {naked ? Math.round(naked.recall * 100) : beforeScore}
-              </span>
-              <span className="pb-2 text-2xl text-[var(--color-muted-foreground)]">
-                →
-              </span>
-              <span className="text-5xl font-bold text-[var(--color-primary)]">
-                {harness ? Math.round(harness.recall * 100) : afterScore}
-              </span>
-            </div>
-            <p className="mt-3 text-sm text-[var(--color-muted-foreground)]">
-              Hits {harness?.truePositives ?? 0}/{harness?.expected ?? 0} expected
-              (harness)
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-base">Naked vs harness (detection)</CardTitle>
+          <CardDescription>
+            Recall and precision on the full benchmark — secondary to fix outcomes
+            and complex-page precision above
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="h-72">
+          <ResponsiveContainer width="100%" height="100%">
+            <BarChart data={chartData} barGap={8}>
+              <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.08)" />
+              <XAxis dataKey="mode" stroke="#888" />
+              <YAxis domain={[0, 100]} stroke="#888" />
+              <Tooltip
+                contentStyle={{
+                  background: "#18181b",
+                  border: "1px solid #3f3f46",
+                  borderRadius: "8px",
+                }}
+              />
+              <Legend />
+              <Bar dataKey="recall" name="Recall" fill="#4ade80" radius={[4, 4, 0, 0]} />
+              <Bar
+                dataKey="precision"
+                name="Precision"
+                fill="#60a5fa"
+                radius={[4, 4, 0, 0]}
+              />
+            </BarChart>
+          </ResponsiveContainer>
+          {naked && harness && (
+            <p className="mt-3 text-xs text-[var(--color-muted-foreground)]">
+              Harness: {harness.truePositives}/{harness.expected} expected hits ·{" "}
+              {harness.detected} reported
             </p>
-          </CardContent>
-        </Card>
-
-        <Card className="md:col-span-2">
-          <CardHeader>
-            <CardTitle className="text-base">Naked vs harness</CardTitle>
-            <CardDescription>Recall and precision (%)</CardDescription>
-          </CardHeader>
-          <CardContent className="h-72">
-            <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={chartData} barGap={8}>
-                <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.08)" />
-                <XAxis dataKey="mode" stroke="#888" />
-                <YAxis domain={[0, 100]} stroke="#888" />
-                <Tooltip
-                  contentStyle={{
-                    background: "#18181b",
-                    border: "1px solid #3f3f46",
-                    borderRadius: "8px",
-                  }}
-                />
-                <Legend />
-                <Bar dataKey="recall" name="Recall" fill="#4ade80" radius={[4, 4, 0, 0]} />
-                <Bar
-                  dataKey="precision"
-                  name="Precision"
-                  fill="#60a5fa"
-                  radius={[4, 4, 0, 0]}
-                />
-              </BarChart>
-            </ResponsiveContainer>
-          </CardContent>
-        </Card>
-      </div>
+          )}
+        </CardContent>
+      </Card>
 
       <Card>
         <CardHeader>
-          <CardTitle className="text-base">Leaderboard</CardTitle>
+          <CardTitle className="text-base">Leaderboard (mixed tasks)</CardTitle>
           <CardDescription>
-            Model × mode matrix (all tasks). Use the toggle above for html-live
-            subset from the latest score batch.
+            Repo-cloned benchmark runs — use complex-page precision above as the
+            headline metric
           </CardDescription>
         </CardHeader>
         <CardContent className="overflow-x-auto">

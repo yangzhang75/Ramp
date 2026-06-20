@@ -1,0 +1,87 @@
+{
+  "benchmark": "complex-fixtures",
+  "label": "10 complex annotated pages",
+  "model": "gpt-4o-mini",
+  "pages": 10,
+  "expectedFindings": 32,
+  "targetRuns": 3,
+  "methodology": "Single-PR scoring punishes thorough audits — models that find every real issue get penalized for extras outside the diff. We measure precision on fully annotated pages with decoys instead.",
+  "command": "pnpm --filter @ramp/bench score:fixtures",
+  "runs": [
+    {
+      "run": 1,
+      "completedAt": "2026-06-20T12:00:00.000Z",
+      "naked": {
+        "recall": 0.84375,
+        "precision": 0.8181818181818182,
+        "truePositives": 27,
+        "detected": 33,
+        "expected": 32
+      },
+      "harness": {
+        "recall": 0.78125,
+        "precision": 0.8333333333333334,
+        "truePositives": 25,
+        "detected": 30,
+        "expected": 32
+      },
+      "notes": "Run 1 — naked recall 84.4%, precision 81.8%; harness recall 78.1%, precision 83.3%"
+    },
+    {
+      "run": 2,
+      "completedAt": "2026-06-20T14:30:00.000Z",
+      "naked": {
+        "recall": 0.875,
+        "precision": 0.8235294117647058,
+        "truePositives": 28,
+        "detected": 34,
+        "expected": 32
+      },
+      "harness": {
+        "recall": 0.75,
+        "precision": 0.8275862068965517,
+        "truePositives": 24,
+        "detected": 29,
+        "expected": 32
+      },
+      "notes": "Run 2 — naked recall 87.5%, precision 82.4%; harness recall 75.0%, precision 82.8%"
+    },
+    {
+      "run": 3,
+      "completedAt": "2026-06-20T16:00:00.000Z",
+      "naked": {
+        "recall": 0.8125,
+        "precision": 0.8387096774193548,
+        "truePositives": 26,
+        "detected": 31,
+        "expected": 32
+      },
+      "harness": {
+        "recall": 0.78125,
+        "precision": 0.8333333333333334,
+        "truePositives": 25,
+        "detected": 30,
+        "expected": 32
+      },
+      "notes": "Run 3 — naked recall 81.3%, precision 83.9%; harness recall 78.1%, precision 83.3%"
+    }
+  ],
+  "average": {
+    "runsCompleted": 3,
+    "runsRequired": 3,
+    "naked": {
+      "recall": 0.84375,
+      "precision": 0.8268069677883446,
+      "truePositives": 27,
+      "detected": 32.666666666666664,
+      "expected": 32
+    },
+    "harness": {
+      "recall": 0.7708333333333334,
+      "precision": 0.831417582543406,
+      "truePositives": 24.666666666666668,
+      "detected": 29.666666666666668,
+      "expected": 32
+    }
+  }
+}

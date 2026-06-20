@@ -3,24 +3,24 @@ import type { Finding, Score } from "@ramp/shared";
 export const mockBeforeScore: Score = {
   runId: "run-demo-001",
   phase: "before",
-  score: 42,
-  critical: 3,
-  serious: 5,
-  moderate: 4,
-  minor: 2,
-  totalViolations: 14,
+  score: 60,
+  critical: 1,
+  serious: 3,
+  moderate: 1,
+  minor: 0,
+  totalViolations: 5,
   computedAt: "2026-06-19T10:00:00.000Z",
 };
 
 export const mockAfterScore: Score = {
   runId: "run-demo-001",
   phase: "after",
-  score: 87,
+  score: 96,
   critical: 0,
-  serious: 1,
-  moderate: 2,
-  minor: 1,
-  totalViolations: 4,
+  serious: 0,
+  moderate: 1,
+  minor: 0,
+  totalViolations: 1,
   computedAt: "2026-06-19T10:12:00.000Z",
 };
 
@@ -157,10 +157,10 @@ export const mockLeaderboard: LeaderboardRow[] = [
 ];
 
 export const mockPullRequest = {
-  repo: "acme/design-system",
-  title: "fix(a11y): add alt text and icon button labels in navbar",
-  url: "https://github.com/acme/design-system/pull/1284",
-  branch: "ramp/a11y-fix-run-demo-001",
+  repo: "yangzhang75/Ramp",
+  title: "Improve accessibility of bad.html — Ramp verified WCAG fixes",
+  url: "https://github.com/yangzhang75/Ramp/pull/7",
+  branch: "ramp/fix-bad-html-demo",
   diff: `diff --git a/src/components/HeroBanner.tsx b/src/components/HeroBanner.tsx
 index 1a2b3c4..5d6e7f8 100644
 --- a/src/components/HeroBanner.tsx
