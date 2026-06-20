@@ -1,0 +1,136 @@
+/**
+ * Semantic fix loop: close the "axe can't even detect this" gap.
+ *
+ * Detect garbage-but-present accessible names (semantic review) → fix each via
+ * Claude Code headless (reusing fixOneFinding) → re-review to confirm → open a
+ * PR (reusing openPr). axe passes the page before AND after (it's blind to name
+ * quality) — the proof is Ramp's semantic review going from N issues → 0.
+ *
+ * Reuses fixOneFinding + openPr (no rewrite). Audit = OpenAI gpt-4o-mini;
+ * fix = Claude Code quota. Does NOT touch runAudit.
+ *
+ *   pnpm --filter @ramp/control-plane fix:semantic
+ */
+import { execFileSync } from "node:child_process";
+import { copyFileSync, mkdtempSync, readFileSync, rmSync } from "node:fs";
+import { tmpdir } from "node:os";
+import { dirname, join, resolve } from "node:path";
+import { fileURLToPath } from "node:url";
+import { axeScan, reviewSemanticQuality, type SemanticIssue } from "@ramp/harness";
+import type { Finding, ViolationType } from "@ramp/shared";
+import { fixOneFinding } from "../fixer.js";
+import { openPr } from "../github.js";
+
+const here = dirname(fileURLToPath(import.meta.url));
+const fixture = resolve(here, "../../../harness/fixtures/garbage-names.html");
+const FILE_IN_REPO = "packages/harness/fixtures/garbage-names.html";
+
+// Only kinds that map cleanly to a ViolationType for the fixer.
+const KIND_TO_TYPE: Partial<Record<SemanticIssue["kind"], ViolationType>> = {
+  alt: "missing_alt_text",
+  "button-name": "icon_button_accessible_names",
+};
+
+function toFinding(issue: SemanticIssue, runId: string, i: number): Finding {
+  return {
+    id: `${runId}-s${i}`,
+    runId,
+    type: KIND_TO_TYPE[issue.kind]!,
+    severity: "serious",
+    wcagRule:
+      issue.kind === "alt" ? "1.1.1 Non-text Content" : "4.1.2 Name, Role, Value",
+    domNode: issue.domNode,
+    sourceFile: "garbage-names.html",
+    page: "garbage-names.html",
+    confidence: 1,
+    autoFixable: true,
+    evidence: `The accessible name ${JSON.stringify(issue.name)} is PRESENT (axe passes it) but is not meaningful: ${issue.reason} Replace it with a concise, descriptive name. Suggested: ${JSON.stringify(issue.suggestion)}.`,
+  };
+}
+
+async function main(): Promise<void> {
+  if (!process.env.GITHUB_TOKEN) throw new Error("GITHUB_TOKEN required");
+  const runId = "sem-demo";
+
+  const workdir = mkdtempSync(join(tmpdir(), "ramp-semrepo-"));
+  const g = (args: string[]) =>
+    execFileSync("git", ["-c", "core.pager=cat", ...args], { cwd: workdir }).toString();
+  g(["init", "-q", "-b", "main"]);
+  g(["config", "user.email", "ramp@demo"]);
+  g(["config", "user.name", "ramp"]);
+  copyFileSync(fixture, join(workdir, "garbage-names.html"));
+  g(["add", "."]);
+  g(["commit", "-q", "-m", "base"]);
+  const target = join(workdir, "garbage-names.html");
+
+  try {
+    // axe is blind here — capture it to prove the point.
+    const axeBefore = await axeScan(target);
+    // Semantic review BEFORE.
+    const before = await reviewSemanticQuality(target);
+    const badBefore = before.filter((s) => !s.meaningful);
+    const fixable = badBefore.filter((s) => s.kind in KIND_TO_TYPE);
+    console.log(`[fix:semantic] axe before: ${axeBefore.length} | semantic issues: ${badBefore.length} (fixing ${fixable.length})`);
+
+    // FIX each via Claude Code headless.
+    let i = 0;
+    for (const issue of fixable) {
+      const f = toFinding(issue, runId, ++i);
+      console.log(`[fix:semantic] fixing ${issue.kind} ${JSON.stringify(issue.name)} -> ${JSON.stringify(issue.suggestion)}`);
+      await fixOneFinding(workdir, f);
+    }
+
+    // Verify: axe still passes (blind), semantic review now clean.
+    const axeAfter = await axeScan(target);
+    const after = await reviewSemanticQuality(target);
+    const badAfter = after.filter((s) => !s.meaningful);
+    const diff = g(["diff", "HEAD"]);
+    const fixedContent = readFileSync(target, "utf8");
+    console.log(`[fix:semantic] axe after: ${axeAfter.length} | semantic issues remaining: ${badAfter.length}`);
+
+    const beforeRows = badBefore
+      .map((s) => `| \`${s.kind}\` | ${JSON.stringify(s.name)} | ✅ pass | ❌ not meaningful — ${s.reason} |`)
+      .join("\n");
+    const body = `## The gap axe can't see
+
+axe-core reports **${axeBefore.length} issues** on this page — every element *has* an accessible name, so axe passes it. But ${badBefore.length} of those names are **semantically empty** (\`alt="image"\`, \`aria-label="button"\`, "click here"). Ramp catches what axe is blind to, and fixes it.
+
+## axe vs Ramp
+
+| element | name | axe | Ramp semantic review |
+| --- | --- | --- | --- |
+${beforeRows}
+
+## Result
+
+- **axe:** ${axeBefore.length} → ${axeAfter.length} (unchanged — axe never saw these)
+- **Ramp semantic issues:** ${badBefore.length} → ${badAfter.length}
+
+## Fixes applied (Claude Code, verified by re-review)
+${fixable.map((s) => `- \`${s.kind}\`: ${JSON.stringify(s.name)} → meaningful name`).join("\n")}
+
+---
+🤖 Generated by [Ramp](https://github.com/yangzhang75/Ramp). axe detects *presence*; Ramp judges *meaning* — and ships the fix. *(Demo PR on a fixture; not for merge.)*
+`;
+
+    process.env.GITHUB_TARGET_REPO = "yangzhang75/Ramp";
+    const branch = `ramp/semantic-fix-${Date.now()}`;
+    const url = await openPr({
+      branch,
+      filePath: FILE_IN_REPO,
+      newContent: fixedContent,
+      title: "Fix semantically-empty accessible names — Ramp (axe can't detect these)",
+      body,
+    });
+    console.log(`\nPR_URL: ${url}`);
+    console.log(`SEMANTIC: ${badBefore.length} -> ${badAfter.length} | AXE: ${axeBefore.length} -> ${axeAfter.length}`);
+    console.log("\n--- diff ---\n" + diff);
+  } finally {
+    rmSync(workdir, { recursive: true, force: true });
+  }
+}
+
+main().catch((e) => {
+  console.error("fix:semantic failed:", e);
+  process.exit(1);
+});

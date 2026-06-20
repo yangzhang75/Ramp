@@ -55,9 +55,13 @@ Judge meaningful:true when the name conveys real purpose/content:
 - button "Search", button "Add to cart"
 - link "Download the 2024 annual report"
 
-For every candidate, return: selector (echo exactly), kind (echo), name (echo),
-meaningful, a short reason, and a concrete better suggestion (for meaningful:true
-items, suggestion may repeat the existing good name).`;
+For every candidate return: selector (echo exactly), kind (echo), name (echo),
+meaningful, a short reason, and \`suggestion\` = a CONCRETE literal replacement
+name to use (NOT advice like "add descriptive text"). Infer it from page context
+(headings, nearby text, the link's href). Examples: alt="image" on a logo →
+suggestion "Acme company logo"; link "click here" to /annual-report-2024.pdf →
+"Download the 2024 annual report"; button "button" with a search icon → "Search".
+For meaningful:true items, suggestion may repeat the existing good name.`;
 
 const reviewSchema = z.object({
   items: z.array(
