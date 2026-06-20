@@ -1,0 +1,30 @@
+{
+  "name": "@ramp/shared",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    },
+    "./db": {
+      "types": "./dist/db/index.d.ts",
+      "default": "./dist/db/index.js"
+    }
+  },
+  "scripts": {
+    "build": "tsc -b",
+    "clean": "tsc -b --clean"
+  },
+  "dependencies": {
+    "better-sqlite3": "^11.7.0",
+    "drizzle-orm": "^0.38.2"
+  },
+  "devDependencies": {
+    "@types/better-sqlite3": "^7.6.12",
+    "drizzle-kit": "^0.30.1"
+  }
+}
