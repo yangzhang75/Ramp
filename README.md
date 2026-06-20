@@ -83,9 +83,9 @@ pnpm --filter @ramp/scoring leaderboard
 # 3. Real-repo fix loop — fork → audit → fix → verify → open PR
 TASK_ID=ramp-048 pnpm --filter @ramp/control-plane fix:repo   # needs OPENAI_API_KEY + GITHUB_TOKEN
 
-# 4. API + dashboard
-pnpm dev:control-plane     # node:http API
-pnpm dev:dashboard         # React + Vite UI
+# 4. Web UI (landing + demo dashboard)
+pnpm dev:control-plane     # :8787 — API (optional, for Live Run / benchmark tabs)
+pnpm dev:dashboard         # :5173 — Home tab + axe vs Ramp · Auto-fix · Scores · …
 ```
 
 ## Tech stack
@@ -103,7 +103,7 @@ Sentry · Octokit · `node:http` · TypeScript + pnpm workspaces.
 | `packages/scoring` | Recall/precision metrics + leaderboard |
 | `packages/bench` | A11y-Bench tasks + miners/curators |
 | `packages/control-plane` | HTTP API + fix loop + GitHub PRs |
-| `apps/dashboard` | React demo UI |
+| `apps/dashboard` | React + Vite site: **Home** (product landing) + interactive demo tabs |
 
 ---
 

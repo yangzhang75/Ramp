@@ -39,3 +39,15 @@ body {
 #root {
   min-height: 100vh;
 }
+
+.hero-grid {
+  background-image:
+    linear-gradient(to right, oklch(0.28 0.01 260 / 0.35) 1px, transparent 1px),
+    linear-gradient(to bottom, oklch(0.28 0.01 260 / 0.35) 1px, transparent 1px);
+  background-size: 48px 48px;
+  mask-image: radial-gradient(ellipse 80% 70% at 50% 0%, black 30%, transparent 100%);
+}
+
+.glow-primary {
+  box-shadow: 0 0 80px oklch(0.72 0.17 145 / 0.15);
+}

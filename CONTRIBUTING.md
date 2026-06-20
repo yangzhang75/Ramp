@@ -15,7 +15,7 @@ packages/
   bench/          A11y-Bench: annotated benchmark tasks + grading.
   control-plane/  Orchestrates Detect→Score→Fix→Validate→PR. Implements runFixLoop.
 apps/
-  dashboard/      UI: issue list, severity, before/after score, PR summary.
+  dashboard/      Landing (Home tab) + demo UI: axe vs Ramp, auto-fix PRs, scores, live run.
 ```
 
 ## Directory ownership
