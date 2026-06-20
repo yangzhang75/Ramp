@@ -14,11 +14,11 @@ interface AutoFixDemo {
   repo: string;
   category: string;
   title: string;
-  prUrl: string;
+  prUrl?: string;
   beforeScore: number | null;
   afterScore: number | null;
-  beforeAxeViolations: number;
-  afterAxeViolations: number;
+  beforeAxeViolations: number | null;
+  afterAxeViolations: number | null;
   beforeSemanticIssues?: number;
   afterSemanticIssues?: number;
 }
@@ -98,24 +98,36 @@ export function AutoFixResultsPage() {
                 afterSemantic={demo.afterSemanticIssues}
               />
 
-              <div className="rounded-lg border border-[var(--color-border)] bg-[var(--color-background)]/40 px-4 py-3 text-center">
-                <p className="text-xs uppercase tracking-wide text-[var(--color-muted-foreground)]">
-                  axe violations
+              {demo.beforeAxeViolations != null && demo.afterAxeViolations != null ? (
+                <div className="rounded-lg border border-[var(--color-border)] bg-[var(--color-background)]/40 px-4 py-3 text-center">
+                  <p className="text-xs uppercase tracking-wide text-[var(--color-muted-foreground)]">
+                    axe violations
+                  </p>
+                  <p className="mt-1 text-2xl font-bold">
+                    <span className="text-red-300">{demo.beforeAxeViolations}</span>
+                    <span className="mx-2 text-[var(--color-muted-foreground)]">→</span>
+                    <span className="text-[var(--color-primary)]">{demo.afterAxeViolations}</span>
+                  </p>
+                </div>
+              ) : (
+                <p className="text-center text-xs text-[var(--color-muted-foreground)]">
+                  Score jump from compliance audit (axe counts not primary metric)
                 </p>
-                <p className="mt-1 text-2xl font-bold">
-                  <span className="text-red-300">{demo.beforeAxeViolations}</span>
-                  <span className="mx-2 text-[var(--color-muted-foreground)]">→</span>
-                  <span className="text-[var(--color-primary)]">{demo.afterAxeViolations}</span>
-                </p>
-              </div>
+              )}
 
-              <a
-                href={demo.prUrl}
-                className="inline-flex w-full items-center justify-center gap-2 rounded-lg border border-[var(--color-primary)]/50 bg-[var(--color-primary)]/10 px-4 py-3 text-sm font-medium text-[var(--color-primary)] transition-colors hover:bg-[var(--color-primary)]/20"
-              >
-                View PR
-                <ExternalLink className="h-4 w-4" />
-              </a>
+              {demo.prUrl ? (
+                <a
+                  href={demo.prUrl}
+                  className="inline-flex w-full items-center justify-center gap-2 rounded-lg border border-[var(--color-primary)]/50 bg-[var(--color-primary)]/10 px-4 py-3 text-sm font-medium text-[var(--color-primary)] transition-colors hover:bg-[var(--color-primary)]/20"
+                >
+                  View PR
+                  <ExternalLink className="h-4 w-4" />
+                </a>
+              ) : (
+                <p className="text-center text-xs text-[var(--color-muted-foreground)]">
+                  Semantic demo — axe stays 0 before and after
+                </p>
+              )}
             </CardContent>
           </Card>
         ))}

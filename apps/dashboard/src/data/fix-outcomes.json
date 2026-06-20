@@ -21,8 +21,8 @@
       "id": "aigov-ops",
       "label": "Real OSS",
       "title": "aigov-ops — production fork",
-      "repo": "bobrapp/aigov-ops-open-source-vendor-rfi-rapp-johnston-june-2026",
-      "prUrl": "https://github.com/bobrapp/aigov-ops-open-source-vendor-rfi-rapp-johnston-june-2026/pull/12",
+      "repo": "yangzhang75/aigov-ops-open-source-vendor-rfi-rapp-johnston-june-2026",
+      "prUrl": "https://github.com/yangzhang75/aigov-ops-open-source-vendor-rfi-rapp-johnston-june-2026/pull/1",
       "beforeScore": 92,
       "afterScore": 100,
       "beforeAxeViolations": 2,
@@ -33,6 +33,40 @@
         "link: Skip to main content",
         "main",
         "button: Submit request"
+      ]
+    },
+    {
+      "id": "whatifarcade",
+      "label": "Arcade site",
+      "title": "Whatifarcade — labels + main landmark",
+      "repo": "yangzhang75/Whatifarcade",
+      "prUrl": "https://github.com/yangzhang75/Whatifarcade/pull/1",
+      "beforeScore": 96,
+      "afterScore": 100,
+      "beforeAxeViolations": 2,
+      "afterAxeViolations": 0,
+      "screenReaderBefore": ["navigation", "edit text", "button"],
+      "screenReaderAfter": [
+        "navigation: Main",
+        "edit text: Player name",
+        "button: Start game"
+      ]
+    },
+    {
+      "id": "caelaria",
+      "label": "Escape room",
+      "title": "caelaria — unlabeled selects",
+      "repo": "yangzhang75/caelaria",
+      "prUrl": "https://github.com/yangzhang75/caelaria/pull/1",
+      "beforeScore": 84,
+      "afterScore": 92,
+      "beforeAxeViolations": null,
+      "afterAxeViolations": null,
+      "screenReaderBefore": ["combobox", "combobox", "button"],
+      "screenReaderAfter": [
+        "combobox: Difficulty",
+        "combobox: Team size",
+        "button: Book room"
       ]
     },
     {
