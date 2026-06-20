@@ -9,6 +9,8 @@
  * Run with GITHUB_TOKEN + GITHUB_TARGET_REPO in the env:
  *   pnpm --filter @ramp/control-plane fix:demo
  */
+import "../instrument.js"; // MUST be first — initializes Sentry before anything else
+import * as Sentry from "@sentry/node";
 import { execFileSync } from "node:child_process";
 import { copyFileSync, mkdtempSync, readFileSync, rmSync } from "node:fs";
 import { tmpdir } from "node:os";
@@ -147,8 +149,21 @@ async function main(): Promise<void> {
   const target = join(workdir, "bad.html");
 
   try {
+    await Sentry.startSpan(
+      {
+        name: "ramp.fix-loop",
+        op: "ramp.fixloop",
+        attributes: {
+          target: "bad.html (fixture)",
+          repo: process.env.GITHUB_TARGET_REPO ?? "yangzhang75/Ramp",
+        },
+      },
+      async (root) => {
     // BEFORE
-    const beforeAxe = await axeScan(target);
+    const beforeAxe = await Sentry.startSpan(
+      { name: "audit: axe baseline", op: "ramp.audit" },
+      () => axeScan(target),
+    );
     const beforeRuleIds = beforeAxe.map((v) => v.id);
     const beforeSR = await screenReader(target);
     const beforeScore = computeScore(axeToFindings(beforeAxe, `${runId}-before`));
@@ -159,23 +174,42 @@ async function main(): Promise<void> {
     const fixResults = [];
     for (const finding of fixPlan(runId)) {
       console.log(`[fix-demo] fixing ${finding.type} ...`);
-      const attempt = await fixOneFinding(workdir, finding);
-      const v = await verifyFix({
-        runId,
-        findingId: finding.id,
-        type: finding.type,
-        file: "bad.html",
-        diff: attempt.diff,
-        strategy: attempt.strategy,
-        targetUrl: target,
-        beforeRuleIds,
-      });
+      const attempt = await Sentry.startSpan(
+        {
+          name: `fix: ${finding.type}`,
+          op: "ramp.fix.claude_code",
+          attributes: { "finding.type": finding.type, "finding.wcag": finding.wcagRule },
+        },
+        () => fixOneFinding(workdir, finding),
+      );
+      const v = await Sentry.startSpan(
+        {
+          name: `verify: ${finding.type}`,
+          op: "ramp.verify.axe",
+          attributes: { "finding.type": finding.type },
+        },
+        () =>
+          verifyFix({
+            runId,
+            findingId: finding.id,
+            type: finding.type,
+            file: "bad.html",
+            diff: attempt.diff,
+            strategy: attempt.strategy,
+            targetUrl: target,
+            beforeRuleIds,
+          }),
+      );
+      Sentry.setTag("last_fix_status", v.result.status);
       fixResults.push({ finding, result: v.result });
       console.log(`[fix-demo]   ${finding.type}: ${v.result.status} (validated=${v.result.validated})`);
     }
 
     // AFTER
-    const afterAxe = await axeScan(target);
+    const afterAxe = await Sentry.startSpan(
+      { name: "verify: axe after", op: "ramp.verify.axe" },
+      () => axeScan(target),
+    );
     const afterSR = await screenReader(target);
     const afterScore = computeScore(axeToFindings(afterAxe, `${runId}-after`));
     const finalDiff = g(["diff", "HEAD"]);
@@ -235,23 +269,36 @@ Each fix re-run through axe-core: targeted violation resolved, no new violations
 `;
 
     const branch = `ramp/fix-bad-html-${Date.now()}`;
-    const url = await openPr({
-      branch,
-      filePath: "packages/harness/fixtures/bad.html",
-      newContent: fixedContent,
-      title: "Improve accessibility of bad.html — Ramp verified WCAG fixes",
-      body,
-    });
+    const url = await Sentry.startSpan(
+      { name: "open pull request", op: "ramp.pr.github" },
+      () =>
+        openPr({
+          branch,
+          filePath: "packages/harness/fixtures/bad.html",
+          newContent: fixedContent,
+          title: "Improve accessibility of bad.html — Ramp verified WCAG fixes",
+          body,
+        }),
+    );
 
+    root.setAttribute("score.before", beforeScore.score);
+    root.setAttribute("score.after", afterScore.score);
+    root.setAttribute("score.delta", afterScore.score - beforeScore.score);
+    root.setAttribute("pr.url", url);
     console.log(`\nPR_URL: ${url}`);
     console.log(`SCORE: ${beforeScore.score} -> ${afterScore.score}`);
     console.log("\n--- diff ---\n" + finalDiff);
+      },
+    );
   } finally {
     rmSync(workdir, { recursive: true, force: true });
+    await Sentry.flush(3000);
   }
 }
 
-main().catch((e) => {
+main().catch(async (e) => {
   console.error("fix-demo failed:", e);
+  Sentry.captureException(e);
+  await Sentry.flush(3000);
   process.exit(1);
 });

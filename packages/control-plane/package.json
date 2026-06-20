@@ -22,9 +22,10 @@
   },
   "dependencies": {
     "@octokit/rest": "^21.1.1",
-    "@ramp/shared": "workspace:*",
     "@ramp/harness": "workspace:*",
     "@ramp/scoring": "workspace:*",
+    "@ramp/shared": "workspace:*",
+    "@sentry/node": "^10.59.0",
     "drizzle-orm": "^0.38.2"
   },
   "devDependencies": {
