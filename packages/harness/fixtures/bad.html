@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Ramp demo — intentionally inaccessible page</title>
+    <style>
+      body {
+        font-family: system-ui, sans-serif;
+        margin: 2rem;
+        background: #ffffff;
+        color: #111111;
+      }
+      .icon-btn {
+        border: none;
+        background: #1565c0;
+        padding: 8px;
+        border-radius: 6px;
+        cursor: pointer;
+      }
+      .icon-btn svg {
+        width: 20px;
+        height: 20px;
+        fill: #ffffff;
+        display: block;
+      }
+      /* Low-contrast text: light gray on white (~1.6:1, fails WCAG AA). */
+      .low-contrast {
+        color: #bfbfbf;
+        background: #ffffff;
+      }
+      .field {
+        margin: 12px 0;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Acme Dashboard</h1>
+
+    <!-- Violation: informative image with no alt text -->
+    <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='80'%3E%3Crect width='100%25' height='100%25' fill='%231565c0'/%3E%3Ctext x='12' y='46' fill='white' font-family='sans-serif' font-size='18'%3EAcme%3C/text%3E%3C/svg%3E" />
+
+    <!-- Violation: two icon-only buttons with no accessible name -->
+    <button class="icon-btn">
+      <svg viewBox="0 0 24 24" aria-hidden="true">
+        <path d="M21 21l-4.35-4.35M11 18a7 7 0 1 1 0-14 7 7 0 0 1 0 14z" />
+      </svg>
+    </button>
+    <button class="icon-btn">
+      <svg viewBox="0 0 24 24" aria-hidden="true">
+        <path d="M12 5v14M5 12h14" />
+      </svg>
+    </button>
+
+    <!-- Violation: low color contrast text -->
+    <p class="low-contrast">
+      Your subscription renews on the 1st of next month.
+    </p>
+
+    <!-- Violation: form input with no associated label -->
+    <form class="field">
+      <input type="email" placeholder="Email" />
+      <button type="submit">Subscribe</button>
+    </form>
+  </body>
+</html>
