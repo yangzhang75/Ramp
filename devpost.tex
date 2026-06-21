@@ -1,0 +1,132 @@
+\documentclass[11pt, a4paper]{article}
+
+\usepackage[margin=1in]{geometry}
+\usepackage{graphicx}
+\usepackage{hyperref}
+\usepackage{booktabs}
+\usepackage{parskip}
+\usepackage{titlesec}
+\usepackage{xcolor}
+\usepackage{fontenc}
+
+\definecolor{rampgreen}{RGB}{52, 211, 153}
+
+\hypersetup{
+  colorlinks=true,
+  linkcolor=black,
+  urlcolor=blue
+}
+
+\titleformat{\section}{\large\bfseries}{}{0em}{}[\titlerule]
+\titleformat{\subsection}{\normalsize\bfseries}{}{0em}{}
+
+\title{
+  \textbf{Ramp} \\
+  \large audit $\rightarrow$ fix $\rightarrow$ PR \\[0.4em]
+  \normalsize We don't send an accessibility report. \textcolor{rampgreen}{\textbf{We send the fix.}}
+}
+\author{}
+\date{}
+
+\begin{document}
+
+\maketitle
+\thispagestyle{empty}
+
+\begin{figure}[h]
+  \centering
+  \includegraphics[width=\textwidth]{hack_img/workflow.png}
+\end{figure}
+
+\section{What it does}
+
+Ramp takes a GitHub repo URL, renders the real page in a headless browser, audits it for
+WCAG violations, writes the code fix, verifies the fix with axe-core, and opens a
+merge-ready pull request — all automatically.
+
+Tools like Lighthouse and axe-core stop at a report. Ramp closes the loop: the artifact
+isn't a PDF — it's a reviewable PR with a before $\rightarrow$ after compliance score.
+
+\section{Why rendering matters}
+
+Static, source-only scanners catch roughly 40\% of violations. Color contrast, focus order,
+and computed accessible names only exist once the page actually renders. Ramp opens the real
+page and measures them — catching 92\% of violations.
+
+\begin{figure}[h]
+  \centering
+  \includegraphics[width=0.55\textwidth]{hack_img/40->90.png}
+  \caption{Detection rate: static scanners vs.\ Ramp (rendered)}
+\end{figure}
+
+\section{How we built it}
+
+\subsection{Harness (\texttt{packages/harness})}
+Playwright renders the page; axe-core + accessibility tree + screen-reader simulation +
+contrast/focus inspectors gather evidence; a \texttt{gpt-4o-mini} agent reasons over the
+evidence and produces structured findings.
+
+\subsection{Fix loop (\texttt{packages/control-plane})}
+Claude Code rewrites the offending HTML/CSS in a sandboxed fork. axe-core re-runs to verify
+the score improved. Octokit opens a PR on the fork — merge-ready, no spam to upstream
+maintainers.
+
+\subsection{Scoring (\texttt{packages/bench})}
+51 ground-truth tasks mined from real merged accessibility PRs. Evaluates naked LLM vs.\ the
+full harness on recall and precision, split by \texttt{html-live} / \texttt{source-code}.
+
+\section{Real PRs opened}
+
+\begin{table}[h]
+  \centering
+  \begin{tabular}{llr}
+    \toprule
+    \textbf{Repo} & \textbf{Fix} & \textbf{Score} \\
+    \midrule
+    \texttt{bad.html} (fixture) & alt + contrast + button names & 60 $\rightarrow$ 96 \\
+    semantic (fixture) & meaningless alt/link/button names axe passes & 5 $\rightarrow$ 0 issues \\
+    \texttt{aigov-ops} (real OSS) & landmarks + skip link + \texttt{<main>} & 92 $\rightarrow$ 100 \\
+    \texttt{caelaria} (real OSS) & unlabeled \texttt{<select>} controls & 84 $\rightarrow$ 92 \\
+    \texttt{Whatifarcade} (real OSS) & form label + \texttt{<main>} landmark & 96 $\rightarrow$ 100 \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+\begin{figure}[h]
+  \centering
+  \includegraphics[width=\textwidth]{hack_img/github_sample.png}
+  \caption{Sample merge-ready PR opened by Ramp on a real OSS repo}
+\end{figure}
+
+\section{Challenges}
+
+\begin{itemize}
+  \item Getting Claude Code to apply minimal, surgical diffs without breaking unrelated markup.
+  \item Scoring semantic issues (alt text quality, link labels) that axe-core passes — required
+        a separate LLM review pass with structured output.
+  \item Sandboxing the fix loop so each run gets a clean fork at the right base commit.
+\end{itemize}
+
+\section{Accomplishments}
+
+\begin{itemize}
+  \item End-to-end pipeline: URL in, merge-ready PR out, no human in the loop.
+  \item Verified before $\rightarrow$ after scores on 5 repos (fixtures + real OSS).
+  \item Benchmark shows 92\% violation detection vs.\ 40\% for static-only tools.
+\end{itemize}
+
+\section{What's next}
+
+\begin{itemize}
+  \item Support CI integration — run Ramp as a GitHub Action on every PR.
+  \item Expand semantic review: ARIA misuse, reading-order issues, motion/animation.
+  \item Multi-page crawl with priority queue ranked by violation severity.
+\end{itemize}
+
+\section{Built with}
+
+Playwright $\cdot$ axe-core $\cdot$ Vercel AI SDK (\texttt{gpt-4o-mini}) $\cdot$ Claude Code $\cdot$
+Drizzle ORM + SQLite $\cdot$ React + Vite $\cdot$ Sentry $\cdot$ Octokit $\cdot$
+TypeScript $\cdot$ pnpm workspaces
+
+\end{document}
