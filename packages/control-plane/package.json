@@ -1,0 +1,34 @@
+{
+  "name": "@ramp/control-plane",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    }
+  },
+  "scripts": {
+    "build": "tsc -b",
+    "clean": "tsc -b --clean",
+    "serve": "tsx src/server-main.ts",
+    "fix:demo": "tsx src/scripts/fix-demo.ts",
+    "fix:repo": "tsx src/scripts/fix-repo-demo.ts",
+    "fix:semantic": "tsx src/scripts/fix-semantic-demo.ts",
+    "test:pr": "tsc -b && node --env-file-if-exists=../../.env dist/scripts/test-pr.js"
+  },
+  "dependencies": {
+    "@octokit/rest": "^21.1.1",
+    "@ramp/harness": "workspace:*",
+    "@ramp/scoring": "workspace:*",
+    "@ramp/shared": "workspace:*",
+    "@sentry/node": "^10.59.0",
+    "drizzle-orm": "^0.38.2"
+  },
+  "devDependencies": {
+    "tsx": "^4.22.4"
+  }
+}
