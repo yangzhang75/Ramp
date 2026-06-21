@@ -1,0 +1,21 @@
+{
+  "id": "ramp-027",
+  "repoUrl": "https://github.com/scaleway/ultraviolet",
+  "framework": "react",
+  "expectedFindings": [
+    {
+      "type": "missing_form_labels",
+      "wcagRule": "1.1.1",
+      "file": "packages/form/src/components/FileInputField/index.tsx",
+      "expectedFix": "Added aria-label to input for accessibility"
+    }
+  ],
+  "createdAt": "2026-06-19T23:57:30.968Z",
+  "baseCommit": "7f096ed9f4e5991ccb32c40263117e801ee9d804",
+  "fixCommit": "4cdffef789ff073984106f7f07ac91904d0f1db0",
+  "sourcePr": {
+    "repo": "scaleway/ultraviolet",
+    "pr_number": 6537,
+    "title": "fix(FileInputField): label and aria label"
+  }
+}

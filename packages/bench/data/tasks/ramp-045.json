@@ -1,0 +1,22 @@
+{
+  "id": "ramp-045",
+  "repoUrl": "https://github.com/cryptohus/we-litt",
+  "framework": "javascript",
+  "auditMode": "html-live",
+  "expectedFindings": [
+    {
+      "type": "missing_focus_indicator",
+      "wcagRule": "2.4.7",
+      "file": "index.html",
+      "expectedFix": "Add a visible :focus-visible outline so keyboard focus is perceivable on interactive elements."
+    }
+  ],
+  "createdAt": "2026-06-20T06:02:29.092Z",
+  "baseCommit": "c39ba82283fe75014c310b1738ee812c8f5261b3",
+  "fixCommit": "b789c01c8748230d1731ee090571f3b07a33b667",
+  "sourcePr": {
+    "repo": "cryptohus/we-litt",
+    "pr_number": 25,
+    "title": "Accessibility pass: dialog semantics, focus, keyboard, reduced-motion"
+  }
+}

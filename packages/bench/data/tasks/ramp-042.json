@@ -1,0 +1,21 @@
+{
+  "id": "ramp-042",
+  "repoUrl": "https://github.com/ycpiglet/agent_runtime",
+  "framework": "unknown",
+  "expectedFindings": [
+    {
+      "type": "keyboard_navigation",
+      "wcagRule": "2.1.1",
+      "file": "tests/test_ui_console.py",
+      "expectedFix": "Ensure all interactive elements are keyboard operable"
+    }
+  ],
+  "createdAt": "2026-06-20T00:01:19.341Z",
+  "baseCommit": "54b3e8e2113b267efca13c843f655116a78941c0",
+  "fixCommit": "10025b02e16ce102b06e99f4f1f93b2fb9f38f97",
+  "sourcePr": {
+    "repo": "ycpiglet/agent_runtime",
+    "pr_number": 179,
+    "title": "feat(ui): a11y + responsive pass on the vendored visual system (TASK-AR-592)"
+  }
+}

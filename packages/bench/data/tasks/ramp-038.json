@@ -1,0 +1,21 @@
+{
+  "id": "ramp-038",
+  "repoUrl": "https://github.com/Alahmarimousa/parents-education",
+  "framework": "unknown",
+  "expectedFindings": [
+    {
+      "type": "missing_alt_text",
+      "wcagRule": "1.1.1",
+      "file": "js/data/conditions-skeletal.js",
+      "expectedFix": "Add alt text to images for accessibility"
+    }
+  ],
+  "createdAt": "2026-06-19T23:58:29.213Z",
+  "baseCommit": "f49d27649641407fdbd8781250120dee6373903c",
+  "fixCommit": "54d542ef63083e59f5a27121a23b01b212f0a28d",
+  "sourcePr": {
+    "repo": "Alahmarimousa/parents-education",
+    "pr_number": 2,
+    "title": "Add coronal CT figures to Talocalcaneal Coalition topic"
+  }
+}
