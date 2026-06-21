@@ -1,0 +1,38 @@
+{
+  "name": "@ramp/harness",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    }
+  },
+  "scripts": {
+    "build": "tsc -b",
+    "clean": "tsc -b --clean",
+    "probe:axe": "tsx src/probe-axe.ts",
+    "probe:tree": "tsx src/probe-tree.ts",
+    "probe:sr": "tsx src/probe-sr.ts",
+    "probe:inspect": "tsx src/probe-inspect.ts",
+    "probe:audit": "tsx src/probe-audit.ts",
+    "probe:semantic": "tsx src/probe-semantic.ts",
+    "vs:axe": "tsx src/vs-axe.ts",
+    "vs:axe:suite": "tsx src/vs-axe-suite.ts"
+  },
+  "dependencies": {
+    "@ai-sdk/anthropic": "^3.0.85",
+    "@ai-sdk/openai": "^2.0.52",
+    "@axe-core/playwright": "^4.11.3",
+    "@ramp/shared": "workspace:*",
+    "ai": "^6.0.207",
+    "playwright": "^1.61.0",
+    "zod": "^4.4.3"
+  },
+  "devDependencies": {
+    "tsx": "^4.22.4"
+  }
+}
