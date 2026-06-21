@@ -8,7 +8,7 @@ export function BackendNotice({ className }: { className?: string }) {
         className,
       )}
     >
-      <p className="font-medium">Control-plane not connected</p>
+      <p className="font-medium">Control plane offline</p>
       <p className="mt-1 text-amber-200/90">
         Run{" "}
         <code className="rounded bg-black/30 px-1 py-0.5 font-mono text-xs">
