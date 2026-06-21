@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Aurora Wireless Headphones — NovaSound</title>
+    <style>
+      body { font-family: system-ui, sans-serif; margin: 0; color: #111111; background: #ffffff; }
+      header { background: #0d1b2a; color: #ffffff; padding: 16px 24px; display: flex; justify-content: space-between; align-items: center; }
+      .cart-btn { background: #1b4965; border: none; border-radius: 8px; padding: 10px; cursor: pointer; }
+      .cart-btn svg { width: 22px; height: 22px; fill: #ffffff; display: block; }
+      main { max-width: 760px; margin: 0 auto; padding: 24px; }
+      .product { display: flex; gap: 24px; flex-wrap: wrap; }
+      .product img { width: 280px; height: auto; border-radius: 12px; }
+      .price { font-size: 1.8rem; font-weight: 700; color: #0d1b2a; }
+      /* Light gray fine print on white — ~1.9:1, fails WCAG AA. */
+      .price-note { color: #bdbdbd; font-size: 0.85rem; }
+      .buy { background: #1b4965; color: #ffffff; border: none; border-radius: 8px; padding: 12px 20px; font-size: 1rem; cursor: pointer; }
+    </style>
+  </head>
+  <body>
+    <header>
+      <strong>NovaSound</strong>
+      <button class="cart-btn" id="cart-btn">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 18c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm10 0c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zM7.2 14h9.5l3.6-7H6.2" /></svg>
+      </button>
+    </header>
+    <main>
+      <h1>Aurora Wireless Headphones</h1>
+      <div class="product">
+        <img id="product-photo" src="aurora-headphones.jpg" width="280" height="280" />
+        <div>
+          <p class="price">$249</p>
+          <p>Active noise cancelling, 40-hour battery life, and USB-C fast charging.</p>
+          <p class="price-note">Taxes calculated at checkout. Free returns within 30 days.</p>
+          <button class="buy">Add to cart</button>
+        </div>
+      </div>
+    </main>
+  </body>
+</html>

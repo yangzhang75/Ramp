@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Pricing — Flowdesk</title>
+    <style>
+      body { font-family: system-ui, sans-serif; margin: 0; color: #111111; background: #ffffff; }
+      header { background: #111827; color: #ffffff; padding: 16px 24px; }
+      main { max-width: 720px; margin: 0 auto; padding: 24px; }
+      .banner { background: #eef2ff; border-radius: 10px; padding: 12px 16px; display: flex; justify-content: space-between; align-items: center; }
+      .close-btn { background: transparent; border: none; cursor: pointer; padding: 6px; }
+      .close-btn svg { width: 18px; height: 18px; stroke: #374151; stroke-width: 2; fill: none; display: block; }
+      .plan { border: 1px solid #e5e7eb; border-radius: 12px; padding: 20px; margin: 20px 0; }
+      .cta { background: #4338ca; color: #ffffff; border: none; border-radius: 8px; padding: 11px 18px; font-size: 1rem; cursor: pointer; }
+      .coupon input { padding: 10px 12px; border: 1px solid #b0b0b0; border-radius: 8px; font-size: 1rem; }
+      .coupon button { padding: 10px 16px; border: none; border-radius: 8px; background: #374151; color: #ffffff; cursor: pointer; }
+      /* Light gray legal text on white — ~2.3:1, fails WCAG AA. */
+      .terms { color: #bcbcbc; font-size: 0.8rem; margin-top: 24px; }
+    </style>
+  </head>
+  <body>
+    <header><strong>Flowdesk</strong></header>
+    <main>
+      <h1>Simple pricing</h1>
+      <div class="banner">
+        <p>Summer sale — 20% off all annual plans.</p>
+        <button class="close-btn" id="close-banner">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18" /></svg>
+        </button>
+      </div>
+      <div class="plan">
+        <h2>Pro</h2>
+        <p>$24 per user, billed annually.</p>
+        <button class="cta">Choose Pro</button>
+      </div>
+      <form class="coupon">
+        <input id="coupon" type="text" placeholder="Coupon code" />
+        <button type="submit">Apply</button>
+      </form>
+      <p class="terms">Prices exclude VAT. You can cancel anytime from your account settings.</p>
+    </main>
+  </body>
+</html>
