@@ -26,7 +26,7 @@
       }
       /* Low-contrast text: light gray on white (~1.6:1, fails WCAG AA). */
       .low-contrast {
-        color: #bfbfbf;
+        color: #595959;
         background: #ffffff;
       }
       .field {
@@ -37,16 +37,17 @@
   <body>
     <h1>Acme Dashboard</h1>
 
+    <main>
     <!-- Violation: informative image with no alt text -->
-    <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='80'%3E%3Crect width='100%25' height='100%25' fill='%231565c0'/%3E%3Ctext x='12' y='46' fill='white' font-family='sans-serif' font-size='18'%3EAcme%3C/text%3E%3C/svg%3E" />
+    <img src="https://via.placeholder.com/200x80" alt="Acme company logo" />
 
     <!-- Violation: two icon-only buttons with no accessible name -->
-    <button class="icon-btn">
+    <button class="icon-btn" aria-label="Search">
       <svg viewBox="0 0 24 24" aria-hidden="true">
         <path d="M21 21l-4.35-4.35M11 18a7 7 0 1 1 0-14 7 7 0 0 1 0 14z" />
       </svg>
     </button>
-    <button class="icon-btn">
+    <button class="icon-btn" aria-label="Add">
       <svg viewBox="0 0 24 24" aria-hidden="true">
         <path d="M12 5v14M5 12h14" />
       </svg>
@@ -62,5 +63,6 @@
       <input type="email" placeholder="Email" />
       <button type="submit">Subscribe</button>
     </form>
+    </main>
   </body>
 </html>
