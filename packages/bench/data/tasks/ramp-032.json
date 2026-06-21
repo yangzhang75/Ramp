@@ -1,0 +1,28 @@
+{
+  "id": "ramp-032",
+  "repoUrl": "https://github.com/Nitya-003/InnerHue",
+  "framework": "next",
+  "expectedFindings": [
+    {
+      "type": "missing_focus_indicator",
+      "wcagRule": "2.4.7",
+      "file": "app/globals.css",
+      "expectedFix": "Added focus-visible styles for keyboard users."
+    },
+    {
+      "type": "keyboard_navigation",
+      "wcagRule": "2.1.1",
+      "file": "app/emotions/page.tsx",
+      "line": 266,
+      "expectedFix": "Added keyboard navigation support for MoodCard."
+    }
+  ],
+  "createdAt": "2026-06-19T23:57:42.482Z",
+  "baseCommit": "3f6ae645b64855084c1f7fec408f70bc6ddb1529",
+  "fixCommit": "616c5f050388c28afce4a19017e5fbcaa4be1cc7",
+  "sourcePr": {
+    "repo": "Nitya-003/InnerHue",
+    "pr_number": 282,
+    "title": "Add keyboard accessibility and aria-labels"
+  }
+}
