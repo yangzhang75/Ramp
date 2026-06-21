@@ -1,0 +1,34 @@
+{
+  "name": "@ramp/scoring",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    }
+  },
+  "scripts": {
+    "build": "tsc -b",
+    "clean": "tsc -b --clean",
+    "score": "tsx --env-file=../../.env src/score.ts",
+    "leaderboard": "tsx --env-file=../../.env src/leaderboard.ts",
+    "leaderboard:openai": "tsx --env-file=../../.env src/leaderboard.ts",
+    "test:match": "tsx --test src/match.test.ts src/audit-context.test.ts",
+    "regrade": "tsx src/regrade-batch.ts"
+  },
+  "dependencies": {
+    "@ai-sdk/anthropic": "^3.0.85",
+    "@ai-sdk/openai": "^2.0.52",
+    "@ramp/harness": "workspace:*",
+    "@ramp/shared": "workspace:*",
+    "ai": "^6.0.207",
+    "zod": "^4.4.3"
+  },
+  "devDependencies": {
+    "tsx": "^4.22.4"
+  }
+}
