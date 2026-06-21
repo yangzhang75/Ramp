@@ -1,0 +1,21 @@
+{
+  "id": "ramp-017",
+  "repoUrl": "https://github.com/JehadurRE/portfolio.jehadurre.me",
+  "framework": "react",
+  "expectedFindings": [
+    {
+      "type": "missing_alt_text",
+      "wcagRule": "1.1.1",
+      "file": "src/components/LazyImage.tsx",
+      "expectedFix": "Added explicit extraction and binding for the alt attribute to ensure images receive their intended alt text."
+    }
+  ],
+  "createdAt": "2026-06-19T09:18:34.022Z",
+  "baseCommit": "fa6f7f1d07b0c7ac8cc7aa5db5dc6cd7662315c5",
+  "fixCommit": "7ee33ed4947b6d1d8b5f39f315ddf73d38a01dd4",
+  "sourcePr": {
+    "repo": "JehadurRE/portfolio.jehadurre.me",
+    "pr_number": 77,
+    "title": "SEO [Day 3]: Semantic HTML Audit, Alt Texts, and Rel attributes — 2026-06-17"
+  }
+}

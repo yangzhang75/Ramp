@@ -1,0 +1,21 @@
+{
+  "id": "ramp-019",
+  "repoUrl": "https://github.com/Umbrella-io/devtrack",
+  "framework": "next",
+  "expectedFindings": [
+    {
+      "type": "missing_alt_text",
+      "wcagRule": "1.1.1",
+      "file": "src/components/dashboard/ThemeAccessibilityController.tsx",
+      "expectedFix": "Add alt text for the Eye icon in the High Contrast button."
+    }
+  ],
+  "createdAt": "2026-06-19T09:18:53.893Z",
+  "baseCommit": "9af3a534735a3ac3d412933eec41fa59c7cc73e4",
+  "fixCommit": "c672ca1b9ee86c584203ecd6aa38c4fafc92f4a1",
+  "sourcePr": {
+    "repo": "Umbrella-io/devtrack",
+    "pr_number": 2530,
+    "title": "feat(dashboard): implement ThemeAccessibilityController widget for da…"
+  }
+}

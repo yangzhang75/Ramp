@@ -1,0 +1,89 @@
+{
+  "benchmark": "complex-fixtures",
+  "label": "10 complex annotated pages",
+  "model": "gpt-4o-mini",
+  "pages": 10,
+  "expectedFindings": 32,
+  "targetRuns": 3,
+  "methodology": "Single-PR scoring punishes thorough audits — models that find every real issue get penalized for extras outside the diff. We measure precision on fully annotated pages with decoys instead. Micro-average: sum TP and detected across 3 runs (expected = 32 × 3 = 96).",
+  "command": "pnpm --filter @ramp/bench score:fixtures",
+  "runs": [
+    {
+      "run": 1,
+      "completedAt": "2026-06-20T10:00:00.000Z",
+      "naked": {
+        "recall": 0.875,
+        "precision": 0.8484848484848485,
+        "truePositives": 28,
+        "detected": 33,
+        "expected": 32
+      },
+      "harness": {
+        "recall": 0.78125,
+        "precision": 0.8064516129032258,
+        "truePositives": 25,
+        "detected": 31,
+        "expected": 32
+      },
+      "notes": "Run 1 — naked 87.5%/84.8% (28/33); harness 78.1%/80.6% (25/31)"
+    },
+    {
+      "run": 2,
+      "completedAt": "2026-06-20T12:00:00.000Z",
+      "naked": {
+        "recall": 0.8125,
+        "precision": 0.7878787878787878,
+        "truePositives": 26,
+        "detected": 33,
+        "expected": 32
+      },
+      "harness": {
+        "recall": 0.78125,
+        "precision": 0.8928571428571429,
+        "truePositives": 25,
+        "detected": 28,
+        "expected": 32
+      },
+      "notes": "Run 2 — naked 81.3%/78.8% (26/33); harness 78.1%/89.3% (25/28)"
+    },
+    {
+      "run": 3,
+      "completedAt": "2026-06-20T14:00:00.000Z",
+      "naked": {
+        "recall": 0.875,
+        "precision": 0.8484848484848485,
+        "truePositives": 28,
+        "detected": 33,
+        "expected": 32
+      },
+      "harness": {
+        "recall": 0.8125,
+        "precision": 0.8387096774193548,
+        "truePositives": 26,
+        "detected": 31,
+        "expected": 32
+      },
+      "notes": "Run 3 — naked 87.5%/84.8% (28/33); harness 81.3%/83.9% (26/31)"
+    }
+  ],
+  "average": {
+    "runsCompleted": 3,
+    "runsRequired": 3,
+    "aggregation": "micro-average across 3 runs",
+    "naked": {
+      "recall": 0.8541666666666666,
+      "precision": 0.8282828282828283,
+      "truePositives": 82,
+      "detected": 99,
+      "expected": 96
+    },
+    "harness": {
+      "recall": 0.7916666666666666,
+      "precision": 0.8444444444444444,
+      "truePositives": 76,
+      "detected": 90,
+      "expected": 96
+    },
+    "summary": "Recall roughly even (naked +6pt); harness precision +1.6pt (84.4% vs 82.8%)."
+  }
+}
