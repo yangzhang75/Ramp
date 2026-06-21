@@ -3,62 +3,62 @@
   "note": "naked (HTML source only) vs harness (rendered page + axe + a11y tree + contrast). Renderable pages only — NOT the source-code bench tasks. Separate from leaderboard.json.",
   "model": "gpt-4o-mini",
   "computedAt": "2026-06-20",
-  "command": "OPENAI_API_KEY=… pnpm --filter @ramp/bench score:html-live",
-  "methodology": "naked is given ONLY the page HTML; harness opens the rendered page. On the render-dependent suite the contrast violations live in EXTERNAL CSS — computed/rendered values a source-reading model cannot determine (cascade, overrides, background blending), so naked is blind to them while the harness measures them with check_contrast. The inline-CSS baseline keeps colors in the HTML, so naked can read them and the two modes roughly tie — which is exactly why the harness edge shows up only on render-dependent pages. Pages are authored eval fixtures with complete gold annotations + accessible decoys (so over-reporting is penalised); they are NOT scraped single-PR tasks (those have incomplete ground truth and cannot fairly measure precision).",
-  "headline": "Combined (18 pages, 56 findings): harness recall 83.9% / precision 82.5% vs naked 60.7% / 69.4%. Render-dependent subset (8 pages): harness 87.5% / 87.5% vs naked 33.3% / 42.1%.",
-  "runs": 1,
+  "command": "OPENAI_API_KEY=… HL_RUNS=3 pnpm --filter @ramp/bench score:html-live",
+  "methodology": "naked is given ONLY the page HTML; harness opens the rendered page. On the render-dependent suite the contrast violations live in EXTERNAL CSS — computed/rendered values a source-reading model cannot determine (cascade, overrides, background blending), so naked is blind to them while the harness measures them with check_contrast. The inline-CSS baseline keeps colors in the HTML, so naked can read them and the two modes roughly tie — which is exactly why the harness edge shows up only on render-dependent pages. Pages are authored eval fixtures with complete gold annotations + accessible decoys (so over-reporting is penalised); they are NOT scraped single-PR tasks. Figures are pooled (micro-average) over 3 runs.",
+  "headline": "3-run average. Combined (18 pages, 168 findings): harness recall 84.5% / precision 89.3% vs naked 69.0% / 79.5%. Render-dependent subset (8 pages, 72 findings): harness 91.7% / 91.7% vs naked 40.3% / 53.7%.",
+  "runs": 3,
   "suites": {
     "fixtures-live": {
       "label": "render-dependent (contrast in external CSS)",
       "pages": 8,
       "naked": {
-        "expected": 24,
-        "truePositives": 8,
-        "detected": 19,
-        "recall": 0.3333333333333333,
-        "precision": 0.42105263157894735
+        "expected": 72,
+        "truePositives": 29,
+        "detected": 54,
+        "recall": 0.4027777777777778,
+        "precision": 0.5370370370370371
       },
       "harness": {
-        "expected": 24,
-        "truePositives": 21,
-        "detected": 24,
-        "recall": 0.875,
-        "precision": 0.875
+        "expected": 72,
+        "truePositives": 66,
+        "detected": 72,
+        "recall": 0.9166666666666666,
+        "precision": 0.9166666666666666
       }
     },
     "fixtures": {
       "label": "inline-CSS baseline",
       "pages": 10,
       "naked": {
-        "expected": 32,
-        "truePositives": 26,
-        "detected": 30,
-        "recall": 0.8125,
-        "precision": 0.8666666666666667
+        "expected": 96,
+        "truePositives": 87,
+        "detected": 92,
+        "recall": 0.90625,
+        "precision": 0.9456521739130435
       },
       "harness": {
-        "expected": 32,
-        "truePositives": 26,
-        "detected": 33,
-        "recall": 0.8125,
-        "precision": 0.7878787878787878
+        "expected": 96,
+        "truePositives": 76,
+        "detected": 87,
+        "recall": 0.7916666666666666,
+        "precision": 0.8735632183908046
       }
     }
   },
   "combined": {
     "naked": {
-      "expected": 56,
-      "truePositives": 34,
-      "detected": 49,
-      "recall": 0.6071428571428571,
-      "precision": 0.6938775510204082
+      "expected": 168,
+      "truePositives": 116,
+      "detected": 146,
+      "recall": 0.6904761904761905,
+      "precision": 0.7945205479452054
     },
     "harness": {
-      "expected": 56,
-      "truePositives": 47,
-      "detected": 57,
-      "recall": 0.8392857142857143,
-      "precision": 0.8245614035087719
+      "expected": 168,
+      "truePositives": 142,
+      "detected": 159,
+      "recall": 0.8452380952380952,
+      "precision": 0.8930817610062893
     }
   }
 }
