@@ -15,7 +15,7 @@ export function BackendNotice({ className }: { className?: string }) {
           pnpm dev:control-plane
         </code>{" "}
         to load live benchmark runs. Tabs with static JSON (axe vs Ramp, Auto-fix, precision)
-        still show verified demo data.
+        still work with verified demo data.
       </p>
     </div>
   );
