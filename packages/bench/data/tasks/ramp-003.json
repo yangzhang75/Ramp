@@ -1,0 +1,29 @@
+{
+  "id": "ramp-003",
+  "repoUrl": "https://github.com/knoxiboy/DoubtDesk",
+  "framework": "next",
+  "expectedFindings": [
+    {
+      "type": "missing_alt_text",
+      "wcagRule": "1.1.1",
+      "file": "src/components/DoubtCard.tsx",
+      "line": 324,
+      "expectedFix": "Updated alt text for image to provide more descriptive information."
+    },
+    {
+      "type": "missing_alt_text",
+      "wcagRule": "1.1.1",
+      "file": "src/components/DoubtCard.tsx",
+      "line": 503,
+      "expectedFix": "Updated alt text for full view image to provide more descriptive information."
+    }
+  ],
+  "createdAt": "2026-06-19T09:17:40.649Z",
+  "baseCommit": "30c282fc95449c4797655d667498c70cdd2b00c7",
+  "fixCommit": "71782542c846e20a220f521e0d14b35e62b23a1e",
+  "sourcePr": {
+    "repo": "knoxiboy/DoubtDesk",
+    "pr_number": 653,
+    "title": "Fix/alt text accessibility"
+  }
+}
