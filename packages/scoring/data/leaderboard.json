@@ -1,53 +1,46 @@
 {
+  "_note": "Served by control-plane /benchmark/leaderboard. Sourced from the html-live fair comparison (renderable pages only; NOT the source-code bench tasks). Mirrors packages/scoring/data/html-live-leaderboard.json. The old mixed-task run (harness < naked) was removed — it conflated source-code tasks the live-page harness cannot open.",
   "entries": [
-    {
-      "provider": "openai",
-      "model": "gpt-4o",
-      "label": "GPT-4o",
-      "taskCount": 23,
-      "computedAt": "2026-06-19T11:45:56.331Z",
-      "naked": {
-        "mode": "naked",
-        "tasks": 19,
-        "expected": 29,
-        "truePositives": 6,
-        "detected": 61,
-        "recall": 0.20689655172413793,
-        "precision": 0.09836065573770492
-      },
-      "harness": {
-        "mode": "harness",
-        "tasks": 16,
-        "expected": 24,
-        "truePositives": 1,
-        "detected": 17,
-        "recall": 0.041666666666666664,
-        "precision": 0.058823529411764705
-      }
-    },
     {
       "provider": "openai",
       "model": "gpt-4o-mini",
       "label": "GPT-4o mini",
-      "taskCount": 23,
-      "computedAt": "2026-06-19T11:33:05.556Z",
+      "taskCount": 18,
+      "computedAt": "2026-06-20T12:00:00.000Z",
       "naked": {
         "mode": "naked",
-        "tasks": 21,
-        "expected": 30,
-        "truePositives": 16,
-        "detected": 117,
-        "recall": 0.5333333333333333,
-        "precision": 0.13675213675213677
+        "expected": 168,
+        "truePositives": 116,
+        "detected": 146,
+        "recall": 0.6904761904761905,
+        "precision": 0.7945205479452054
       },
       "harness": {
         "mode": "harness",
-        "tasks": 21,
-        "expected": 30,
-        "truePositives": 10,
-        "detected": 88,
-        "recall": 0.3333333333333333,
-        "precision": 0.11363636363636363
+        "expected": 168,
+        "truePositives": 142,
+        "detected": 159,
+        "recall": 0.8452380952380952,
+        "precision": 0.8930817610062893
+      },
+      "htmlLive": {
+        "taskCount": 8,
+        "naked": {
+          "mode": "naked",
+          "expected": 72,
+          "truePositives": 29,
+          "detected": 54,
+          "recall": 0.4027777777777778,
+          "precision": 0.5370370370370371
+        },
+        "harness": {
+          "mode": "harness",
+          "expected": 72,
+          "truePositives": 66,
+          "detected": 72,
+          "recall": 0.9166666666666666,
+          "precision": 0.9166666666666666
+        }
       }
     }
   ]
