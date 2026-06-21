@@ -308,3 +308,184 @@ Minor issues: 2
 ```
 
 The score should be used for comparison, not as a claim of full WCAG compliance.
+
+
+---
+
+### Step 5: Fix Planning
+
+Group violations into fixable categories.
+
+For the MVP, prioritize high-confidence and automatically verifiable issues:
+
+1. Missing `alt` text on images
+2. Missing labels for form inputs
+3. Icon buttons without accessible names
+4. Low color contrast
+5. Incorrect heading hierarchy
+6. Missing landmarks
+7. Missing focus indicators
+
+For each issue, generate a repair plan.
+
+Example:
+
+```json
+{
+  "issue": "Input element has no accessible label",
+  "file": "src/components/LoginForm.tsx",
+  "repair_strategy": "Add a visible label connected with htmlFor/id",
+  "risk": "low",
+  "requires_human_review": false
+}
+```
+
+Ramp should avoid fixing issues where the correct repair requires unclear product or design intent.
+
+---
+
+### Step 6: Code Modification
+
+Apply minimal, reviewable code changes.
+
+General repair principles:
+
+* Prefer semantic HTML over ARIA when possible.
+* Prefer visible labels over hidden labels when appropriate.
+* Do not use ARIA to cover up poor semantics.
+* Preserve existing behavior.
+* Preserve existing styling as much as possible.
+* Keep fixes small and localized.
+* Avoid broad refactors.
+* Do not claim full compliance unless validation supports it.
+
+Example repairs:
+
+```tsx
+// Before
+<input type="email" placeholder="Email" />
+
+// After
+<label htmlFor="email">Email</label>
+<input id="email" type="email" placeholder="Email" />
+```
+
+```tsx
+// Before
+<button>
+  <SearchIcon />
+</button>
+
+// After
+<button aria-label="Search">
+  <SearchIcon />
+</button>
+```
+
+```tsx
+// Before
+<img src="/hero.png" />
+
+// After
+<img src="/hero.png" alt="Dashboard preview showing project analytics" />
+```
+
+```tsx
+// Before
+<div className="page">
+  <Header />
+  <Content />
+</div>
+
+// After
+<div className="page">
+  <Header />
+  <main>
+    <Content />
+  </main>
+</div>
+```
+
+---
+
+### Step 7: Validation Loop
+
+After applying fixes, rerun validation.
+
+Validation should include:
+
+* axe-core scan
+* page smoke test
+* build command
+* lint command, if available
+* test command, if available
+* keyboard navigation smoke test, if relevant
+
+Ramp should compare before and after results.
+
+Example validation result:
+
+```text
+Accessibility score improved from 52 to 86.
+axe violations reduced from 14 to 4.
+Build passed.
+Lint passed.
+No runtime page crash detected.
+```
+
+If a fix causes build failure or page failure, Ramp should revert the risky change and mark that issue as requiring human review.
+
+---
+
+### Step 8: Pull Request Generation
+
+If `create_pull_request` is true, create a branch and prepare a pull request.
+
+Suggested branch name:
+
+```text
+ramp/a11y-repair
+```
+
+Suggested PR title:
+
+```text
+Improve accessibility compliance with verified WCAG fixes
+```
+
+Suggested PR body:
+
+```markdown
+## Summary
+
+Ramp improved the accessibility score from 52/100 to 86/100.
+
+## Fixed Issues
+
+- Added accessible names to icon-only buttons
+- Added labels to form inputs
+- Added descriptive alt text to images
+- Improved contrast for low-visibility text
+- Corrected heading hierarchy
+- Added missing semantic landmarks
+
+## Validation
+
+- axe violations reduced from 14 to 4
+- Build passed
+- Lint passed
+- Manual smoke test completed
+
+## Remaining Issues
+
+Some issues require human design review, including complex keyboard navigation and ambiguous image descriptions.
+
+## Notes
+
+This PR focuses on high-confidence accessibility fixes. It does not claim complete WCAG compliance.
+```
+
+The PR should include enough evidence for a developer to review quickly.
+
+---
+
