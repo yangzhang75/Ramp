@@ -2,7 +2,7 @@
 
 **Accessibility audit → fix → PR. axe detects; Ramp understands and fixes.**
 
-Lighthouse and axe-core *find* WCAG violations and stop at a report. Ramp closes the loop:
+Lighthouse and axe-core *find* WCAG violations and stop at a report. Ramp closes the full loop:
 it audits a real rendered page, reasons about the WCAG criterion, **writes the fix, verifies
 it with axe-core, and opens a merge-ready pull request** — and it catches semantic issues axe
 is blind to (alt text that just says `"image"`, links that say `"click here"`).
