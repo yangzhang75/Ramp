@@ -1,0 +1,54 @@
+{
+  "entries": [
+    {
+      "provider": "openai",
+      "model": "gpt-4o",
+      "label": "GPT-4o",
+      "taskCount": 23,
+      "computedAt": "2026-06-19T11:45:56.331Z",
+      "naked": {
+        "mode": "naked",
+        "tasks": 19,
+        "expected": 29,
+        "truePositives": 6,
+        "detected": 61,
+        "recall": 0.20689655172413793,
+        "precision": 0.09836065573770492
+      },
+      "harness": {
+        "mode": "harness",
+        "tasks": 16,
+        "expected": 24,
+        "truePositives": 1,
+        "detected": 17,
+        "recall": 0.041666666666666664,
+        "precision": 0.058823529411764705
+      }
+    },
+    {
+      "provider": "openai",
+      "model": "gpt-4o-mini",
+      "label": "GPT-4o mini",
+      "taskCount": 23,
+      "computedAt": "2026-06-19T11:33:05.556Z",
+      "naked": {
+        "mode": "naked",
+        "tasks": 21,
+        "expected": 30,
+        "truePositives": 16,
+        "detected": 117,
+        "recall": 0.5333333333333333,
+        "precision": 0.13675213675213677
+      },
+      "harness": {
+        "mode": "harness",
+        "tasks": 21,
+        "expected": 30,
+        "truePositives": 10,
+        "detected": 88,
+        "recall": 0.3333333333333333,
+        "precision": 0.11363636363636363
+      }
+    }
+  ]
+}
