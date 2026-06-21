@@ -10,8 +10,7 @@ is blind to (alt text that just says `"image"`, links that say `"click here"`).
 > **axe: 0 violations · Ramp: 12 semantic issues axe can't see** (across 3 demo pages).
 >
 > **Detection that depends on rendering:** on pages whose contrast lives in external CSS,
-> the harness catches **92%** of violations vs **40%** reading source only. Across all
-> html-live pages: **84.5%** recall (harness) vs **69.0%** (naked) — 3-run average, gpt-4o-mini.
+> the harness catches **92%** of violations vs **40%** reading source only (gpt-4o-mini, 3-run avg).
 
 ---
 
@@ -19,9 +18,24 @@ is blind to (alt text that just says `"image"`, links that say `"click here"`).
 
 | Pillar | Package | What it does |
 |---|---|---|
-| **A11y-Bench** | `packages/bench` | 51 ground-truth tasks mined from real merged a11y PRs + 10 fully-annotated fixtures; scores **naked LLM vs harness** on recall **and** precision, split by `html-live` / `source-code`. |
+| **A11y-Bench** | `packages/bench` | 51 tasks mined from real merged a11y PRs (real-world corpus) **+** 18 authored eval fixtures with gold annotations and decoys for a fair naked-vs-harness comparison. |
 | **Harness** | `packages/harness` | Drives a headless page through Playwright + axe-core + accessibility tree + screen-reader simulation + contrast/focus inspectors + **semantic review**; an LLM agent reasons over the evidence (`runAudit`). |
 | **Auto-fix loop** | `packages/control-plane` | sandbox checkout → audit → **Claude Code** fix → **axe verify (before/after score)** → **GitHub PR**. Sentry monitors every step. |
+
+## Architecture
+
+```mermaid
+flowchart LR
+  IN["GitHub repo / URL"] --> AUD
+  AUD["Audit<br/>render + axe + a11y tree<br/>+ screen-reader + contrast<br/>gpt-4o-mini agent"] --> FIX
+  FIX["Fix<br/>Claude Code · claude -p"] --> VER
+  VER["Verify<br/>axe re-check"] --> PR
+  PR["Open PR<br/>on your fork"]
+  AUD -. before score .-> SC(["60 → 96"])
+  VER -. after score .-> SC
+```
+
+*Every step is traced in **Sentry**. Packages behind the steps: `harness` = Audit · `control-plane` = sandbox / Fix / Verify / PR + HTTP API + Sentry · `scoring` = score · `shared` = SQLite (`runs` · `findings` · `scores`).*
 
 ## Real fix PRs (verified, before → after)
 
@@ -34,60 +48,57 @@ is blind to (alt text that just says `"image"`, links that say `"click here"`).
 | `Whatifarcade` (real OSS) | form label + `<main>` landmark | **96 → 100** | [PR#1](https://github.com/yangzhang75/Whatifarcade/pull/1) |
 | `modulimo-home` (real OSS · via `fix:url`) | landmarks via `<main>` | **92 → 96** | [PR#2](https://github.com/yangzhang75/modulimo-home/pull/2) |
 
-*PRs are opened on a fork (or your own repo) — Ramp audits and fixes the real page without spamming upstream maintainers.*
+*PRs are opened on a fork (or your own repo) — Ramp fixes the real page without spamming upstream maintainers.*
 
-## Architecture
+## Benchmark (how the numbers are measured)
 
-```mermaid
-flowchart LR
-  USER["Frontend repo / URL"] --> API
+The fair detection comparison runs on **authored eval fixtures**, not the mined single-PR tasks — single-PR grading penalizes a thorough audit (a model that finds *every* real issue is marked "wrong" for anything outside that one PR's diff). The fixtures have complete gold annotations **plus accessible decoys**, so over-reporting is penalized. Figures are pooled (micro-average) over **3 runs** of `gpt-4o-mini`. *naked* sees only the page HTML; *harness* opens the rendered page.
 
-  subgraph CP["Control Plane · packages/control-plane"]
-    API["node:http API<br/>POST /audit · /benchmark"]
-    DB[("Drizzle + SQLite<br/>runs · findings · scores")]
-    API --- DB
-  end
+| Suite | Pages | naked recall | harness recall |
+|---|---|---|---|
+| **Render-dependent** (contrast in external CSS) | 8 | 40.3% | **91.7%** |
+| Inline-CSS baseline (colors in the HTML) | 10 | 90.6% | 79.2% |
+| **Combined** | 18 | 69.0% | **84.5%** |
 
-  subgraph H["Harness · packages/harness"]
-    PW["Playwright page"]
-    TOOLS["axe-core · a11y tree<br/>screen-reader · contrast<br/>focus-order · semantic review"]
-    AGENT(["LLM audit agent<br/>runAudit · gpt-4o-mini"])
-    PW --> TOOLS --> AGENT
-  end
+The edge shows up **exactly where rendering matters**: when contrast lives in external CSS, a source-reading model can't compute it (cascade, overrides, background blending) — the harness measures it with `check_contrast`. On the inline-CSS baseline the colors are in the HTML, so the two roughly tie. That's the honest story: **Ramp wins on what you can only see by rendering.**
 
-  subgraph FL["Fix Loop · packages/control-plane"]
-    SB["sandbox checkout<br/>own repo → direct · else fork"]
-    FIX["Claude Code fix<br/>claude -p"]
-    VER["axe verify<br/>before → after score"]
-    PR["GitHub PR · Octokit"]
-    SB --> FIX --> VER --> PR
-  end
+Reproduce: `pnpm --filter @ramp/bench score:html-live` (full split) · `pnpm --filter @ramp/bench score:fixtures` (precision on annotated pages).
 
-  API --> PW
-  AGENT -->|"findings + before score"| DB
-  AGENT --> SB
-  VER -->|"after score"| DB
-  PR --> GH["GitHub<br/>merge-ready PR"]
-  SENTRY{{"Sentry monitoring"}} -.-> CP
-  SENTRY -.-> H
-  SENTRY -.-> FL
+## Setup
+
+**Requirements**
+- **Node 20+** and **pnpm** — `pnpm install`
+- **`OPENAI_API_KEY`** — runs the audit (`gpt-4o-mini`, ~pennies per page). Get one at <https://platform.openai.com/api-keys>.
+- **`GITHUB_TOKEN`** — used to fork the target repo and open the PR. Classic token with the **`repo`** scope, or a fine-grained token with **Contents + Pull requests: Read/Write**. Create at <https://github.com/settings/tokens>.
+- **Claude Code, logged in** — the *fix* step shells out to `claude -p`. It uses your **Claude Code quota, not an API key**. Install: <https://claude.com/claude-code>.
+
+**Pass the keys per run** (inline — never commit them):
+```bash
+OPENAI_API_KEY=sk-...  GITHUB_TOKEN=ghp_...  \
+  REPO_URL=https://github.com/owner/repo \
+  pnpm --filter @ramp/control-plane fix:url
 ```
+
+**Notes**
+- `fix:demo` needs **no OpenAI key** (it scores with axe and fixes with Claude Code).
+- The fork and the PR land in **your own account** — whoever owns `GITHUB_TOKEN`. Your repo → it edits directly; someone else's → it forks to you first.
+- `fix:url` only handles **static HTML**; it refuses build-type repos (React/Vue/etc.) with a clear message.
 
 ## Quick start
 
 ```bash
 pnpm install
 
-# 1. Self-contained demo — repair bad.html and score it (no OpenAI key; fix uses Claude Code)
+# 1. Self-contained demo — repair bad.html and score it (no OpenAI key needed)
 pnpm --filter @ramp/control-plane fix:demo                    # 60 → 96
 
 # 2. Detection benchmark — naked LLM vs harness, recall + precision
-pnpm --filter @ramp/bench score:fixtures                      # needs OPENAI_API_KEY
+pnpm --filter @ramp/bench score:html-live                     # needs OPENAI_API_KEY
 
 # 3a. Preset real-repo fix loop — fork → audit → fix → verify → open PR
 TASK_ID=ramp-048 pnpm --filter @ramp/control-plane fix:repo   # needs OPENAI_API_KEY + GITHUB_TOKEN
 
-# 3b. ANY static-HTML repo, bring-your-own creds — forks to YOUR account, opens the PR there
+# 3b. ANY static-HTML repo (bring your own creds) — forks to YOUR account, opens the PR there
 REPO_URL=https://github.com/owner/repo \
   pnpm --filter @ramp/control-plane fix:url                   # needs OPENAI_API_KEY + GITHUB_TOKEN
 
@@ -95,8 +106,6 @@ REPO_URL=https://github.com/owner/repo \
 pnpm dev:control-plane     # :8787 — API (Live Run / benchmark tabs)
 pnpm dev:dashboard         # :5173 — Home + axe vs Ramp · Auto-fix · Scores · Live Run
 ```
-
-> Audits run on OpenAI `gpt-4o-mini` (cheap); code fixes run on Claude Code (`claude -p`). `fix:url` refuses build-type repos (React/Vue/etc.) — static HTML only.
 
 ## Tech stack
 
@@ -111,7 +120,7 @@ Sentry · Octokit · `node:http` · TypeScript + pnpm workspaces.
 | `packages/shared` | Types · Drizzle schema · DB client |
 | `packages/harness` | Audit tools + `runAudit` agent + semantic review |
 | `packages/scoring` | Recall/precision metrics + leaderboard |
-| `packages/bench` | A11y-Bench tasks + miners/curators |
+| `packages/bench` | A11y-Bench tasks + fixtures + miners/curators |
 | `packages/control-plane` | HTTP API + fix loop + GitHub PRs + Sentry |
 | `apps/dashboard` | React + Vite site: **Home** (product landing) + interactive demo tabs |
 
